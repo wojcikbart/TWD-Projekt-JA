@@ -1,0 +1,82 @@
+{
+  "tracks": [
+    {
+      "artist": "Childish Gambino",
+      "album": "Camp",
+      "track": "Heartbeat",
+      "uri": "spotify:track:0zo4aX57COch7Wh3NRImTM"
+    },
+    {
+      "artist": "M83",
+      "album": "Before the Dawn Heals Us",
+      "track": "Midnight City",
+      "uri": "spotify:track:5tMY5DJvFr9f8UGTta6KEj"
+    },
+    {
+      "artist": "Giant Rooks",
+      "album": "Fight Club",
+      "track": "Cold Wars",
+      "uri": "spotify:track:3wwj67fNKbFtle0H4RJGPF"
+    },
+    {
+      "artist": "Of Monsters and Men",
+      "album": "My Head Is An Animal",
+      "track": "Little Talks",
+      "uri": "spotify:track:2ihCaVdNZmnHZWt0fvAM7B"
+    },
+    {
+      "artist": "Foals",
+      "album": "Holy Fire",
+      "track": "My Number",
+      "uri": "spotify:track:04caEZhAsQKnWqKsMwk9ud"
+    },
+    {
+      "artist": "Kenya Grace",
+      "album": "Strangers",
+      "track": "Strangers",
+      "uri": "spotify:track:5mjYQaktjmjcMKcUIcqz4s"
+    },
+    {
+      "artist": "Cigarettes After Sex",
+      "album": "Motion Picture Soundtrack",
+      "track": "Motion Picture Soundtrack",
+      "uri": "spotify:track:3NCQO8ath5huTDMXXtibH6"
+    },
+    {
+      "artist": "Norah Jones",
+      "album": "Come Away With Me",
+      "track": "Turn Me On",
+      "uri": "spotify:track:1qzHqfvKrZWo6dVHM1dXrj"
+    },
+    {
+      "artist": "Foals",
+      "album": "What Went Down",
+      "track": "Lonely Hunter",
+      "uri": "spotify:track:073QmHGlZVfCHLDbpbboE3"
+    }
+  ],
+  "albums": [
+  ],
+  "shows": [
+    {
+      "name": "anything goes with emma chamberlain",
+      "publisher": "emma chamberlain",
+      "uri": "spotify:show:5VzFvh1JlEhBMS6ZHZ8CNO"
+    }
+  ],
+  "episodes": [
+    {
+      "name": "medicine harry styles cover",
+      "show": "videos",
+      "uri": "spotify:episode:7wHu9eD8prKIt0oeotOcrF"
+    }
+  ],
+  "bannedTracks": [
+  ],
+  "artists": [
+  ],
+  "bannedArtists": [
+  ],
+  "other": [
+  ]
+}
