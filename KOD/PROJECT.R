@@ -361,7 +361,7 @@ ui <- dashboardPage(
   dashboardHeader(
     title = span("projekt - JA")),
   dashboardSidebar(
-    width = "230px",
+    width = "220px",
     sidebarMenu(
       id = "tabs",
       h3("Features", style = "margin-left: 3px;"),
