@@ -366,8 +366,8 @@ ui <- dashboardPage(
       id = "tabs",
       h3("Features", style = "margin-left: 3px;"),
       menuItem("  Wrapped", tabName = "wrapped", icon = icon('music')),
-      menuItem("  Compatibility", tabName = "compatibility", icon = icon('music')),
-      menuItem("  Playlist", tabName = "playlist", icon = icon('music')),
+      menuItem("  Compatibility", tabName = "compatibility", icon = icon('link')),
+      menuItem("  Playlist", tabName = "playlist", icon = icon('headphones')),
       menuItem("  Summary", tabName = "summary", icon = icon('music')),
       h3("Choose person", style = "margin-left: 3px"),
       prettyRadioButtons(
