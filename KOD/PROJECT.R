@@ -524,7 +524,7 @@ server = function(input, output, session) {
     tags$a(style = "z-index:100; cursor:pointer; margin-top: 5px; margin-left: 5px;",
            href = "https://www.youtube.com/watch?v=ISoCbWBqsYI",
            target="_blank",
-           icon(id = "heart", "heart")
+           icon(id = "star", "star", style = "color : white")
     ) 
   })
   
