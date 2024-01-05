@@ -9,9 +9,21 @@ library(spotifyr)
 library(tidyr)
 library(shinyWidgets)
 library(shinyjs)
+library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
+bartekSongs <- fromJSON("./dane/extendedDane/extendedBartek.json")
+karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
+filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
+
+bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+
+karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
+karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+
+filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
+filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
 
 ####   Style   ####
 
