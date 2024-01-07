@@ -352,7 +352,9 @@ ui <- dashboardPage(
         tabName = "wrapped",
         fluidPage(
           # Tutaj kod dla wrapped
-          uiOutput("wrapped_title"))),
+          uiOutput("wrapped_title")),
+          fluidRow(h3("Average minutes listened per day of the week by month", class = "text-fav"),
+                 plotlyOutput("minutesPerDayOfWeek"))),
       tabItem(
         tabName = "compatibility",
         fluidPage(
@@ -409,7 +411,35 @@ ui <- dashboardPage(
 server = function(input, output, session) {
   
   ####   Praca na Danych   ####
+  # minutes per day of week
+  mPWfiltered <- reactive({
+    minutesPerWeek %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      group_by(dayOfWeek) %>% 
+      summarise(count = sum(count), time = sum(time)) %>% 
+      mutate(time = time / count)
+  })
   
+  output$minutesPerDayOfWeek <- renderPlotly({
+    plot_ly(mPWfiltered(),
+            x = ~dayOfWeek,
+            y = ~time,
+            type = "bar",
+            marker = list(color = '#1DB954')) %>%
+      animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+      layout(
+        xaxis = list(
+          categoryorder = "array",
+          categoryarray = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+        ),
+        yaxis = list(range = c(0, 120)),
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        bargap = 0.1,
+        font = list(color = 'white', family = "Gotham")
+      ) %>%
+      config(displayModeBar = FALSE)
+  })
   
   
   ####   Animacja   ####
