@@ -9,27 +9,51 @@ library(spotifyr)
 library(tidyr)
 library(shinyWidgets)
 library(shinyjs)
+library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
-bartekSongs <- fromJSON("./dane/extendedDane/extendedBartek.json")
-karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
-filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
+# bartekSongs <- fromJSON("./dane/extendedDane/extendedBartek.json")
+# karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
+# filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
+# 
+# bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+# 
+# karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
+# karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+# 
+# filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
+# filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
+# 
+# minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+# 
+# bartekArtists <- fromJSON("./dane/SpotifyExtendedBartek/bartekArtists.json")
+# karolinaArtists <- fromJSON("./dane/SpotifyExtendedKarolina/karolinaArtists.json")
+# filipArtists <- fromJSON("./dane/SpotifyExtendedFilip/filipArtists.json")
 
-bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+# playlist <- fromJSON("./dane/playlist.json")
 
-karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
-karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
 
-filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
-filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
 
-minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+bartekSongs <- fromJSON("../dane/extendedDane/extendedBartek.json")
+karolinaSongs <- fromJSON("../dane/extendedDane/extendedKarolina.json")
+filipSongs <- fromJSON("../dane/extendedDane/extendedFilip.json")
 
-bartekArtists <- fromJSON("./dane/SpotifyExtendedBartek/bartekArtists.json")
-karolinaArtists <- fromJSON("./dane/SpotifyExtendedKarolina/karolinaArtists.json")
-filipArtists <- fromJSON("./dane/SpotifyExtendedFilip/filipArtists.json")
+bartekSH2023 <- fromJSON("../dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
 
+karolinaSH2023 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
+karolinaSH2022 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+
+filipSH2023 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
+filipSH2022 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
+
+minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
+
+bartekArtists <- fromJSON("../dane/SpotifyExtendedBartek/bartekArtists.json")
+karolinaArtists <- fromJSON("../dane/SpotifyExtendedKarolina/karolinaArtists.json")
+filipArtists <- fromJSON("../dane/SpotifyExtendedFilip/filipArtists.json")
+
+playlist <- fromJSON("../dane/playlist.json")
 ####   Style   ####
 
 HTML_styles <- '
@@ -363,8 +387,13 @@ ui <- dashboardPage(
       tabItem(
         tabName = "playlist",
         fluidPage(
-          # Tutaj kod dla playlist
-          uiOutput("playlist_title"))),
+          checkboxGroupInput("selected_people",
+                             "Wybierz osoby:",
+                             choices = unique(playlist$Who),
+                             selected = "Filip"),
+          sliderInput("song_count_slider", "Liczba piosenek:", min = 10, max = 50, value = 15),
+          uiOutput("playlist_title"),
+          uiOutput("song_list_output"))),
       tabItem(
         tabName = "summary",
         fluidPage(
@@ -438,6 +467,37 @@ server = function(input, output, session) {
         font = list(color = 'white', family = "Gotham")
       ) %>%
       config(displayModeBar = FALSE)
+  })
+  
+  
+  output$playlist_title <- renderUI({
+    tags$h3("Twoja Playlista")
+  })
+  
+  ######   PLAYLIST     #######
+  output$song_list_output <- renderUI({
+    
+    playlist_data <- playlist %>% 
+      filter(Who %in% input$selected_people) %>% 
+      group_by(artistName, trackName) %>% 
+      summarise(people = n(),
+                avg_count = round(mean(count)),
+                avg_time = mean(time),
+                .groups = "drop" 
+      ) %>% 
+      arrange(-people, -avg_count, -avg_time)
+    
+    selected_songs <- playlist_data[1:input$song_count_slider, c("artistName", "trackName", "people", "avg_count")]
+    
+    formatted_songs <- paste0(
+      "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ", round(selected_songs$avg_count, 2), " times on average, by ", selected_songs$people, " people'>",
+      seq_along(selected_songs$trackName), ". ", paste(selected_songs$artistName, selected_songs$trackName, sep = " - "), 
+      "</div>"
+    )
+    
+    formatted_songs <- paste("<div style='font-family: Gotham, sans-serif; color: #1db954; cursor: pointer; font-size: 16px;'>", formatted_songs, "</div>", sep = "")
+    
+    HTML(formatted_songs)
   })
   
   
