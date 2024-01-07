@@ -17,20 +17,20 @@ library(jsonlite)
 # karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
 # filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
 # 
-# bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+# bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/SpotifyExtendedBartek2023.json")
 # 
-# karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
-# karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+# karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023.json")
+# karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022.json")
 # 
-# filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
-# filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
+# filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023.json")
+# filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022.json")
 # 
 # minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
 # 
 # bartekArtists <- fromJSON("./dane/SpotifyExtendedBartek/bartekArtists.json")
 # karolinaArtists <- fromJSON("./dane/SpotifyExtendedKarolina/karolinaArtists.json")
 # filipArtists <- fromJSON("./dane/SpotifyExtendedFilip/filipArtists.json")
-
+# 
 # playlist <- fromJSON("./dane/playlist.json")
 
 
@@ -39,13 +39,13 @@ bartekSongs <- fromJSON("../dane/extendedDane/extendedBartek.json")
 karolinaSongs <- fromJSON("../dane/extendedDane/extendedKarolina.json")
 filipSongs <- fromJSON("../dane/extendedDane/extendedFilip.json")
 
-bartekSH2023 <- fromJSON("../dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+bartekSH2023 <- fromJSON("../dane/SpotifyExtendedBartek/SpotifyExtendedBartek2023.json")
 
-karolinaSH2023 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
-karolinaSH2022 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+karolinaSH2023 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023.json")
+karolinaSH2022 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022.json")
 
-filipSH2023 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
-filipSH2022 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
+filipSH2023 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023.json")
+filipSH2022 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022.json")
 
 minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
 
@@ -54,6 +54,9 @@ karolinaArtists <- fromJSON("../dane/SpotifyExtendedKarolina/karolinaArtists.jso
 filipArtists <- fromJSON("../dane/SpotifyExtendedFilip/filipArtists.json")
 
 playlist <- fromJSON("../dane/playlist.json")
+
+SH <- bind_rows(karolinaSH2022, karolinaSH2023, filipSH2022, filipSH2023, bartekSH2023)
+
 ####   Style   ####
 
 HTML_styles <- '
