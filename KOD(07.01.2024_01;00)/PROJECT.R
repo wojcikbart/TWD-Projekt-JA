@@ -13,49 +13,23 @@ library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
-# bartekSongs <- fromJSON("./dane/extendedDane/extendedBartek.json")
-# karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
-# filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
+# Songs <- fromJSON("./dane/Songs.json")
 # 
-# bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/SpotifyExtendedBartek2023.json")
-# 
-# karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023.json")
-# karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022.json")
-# 
-# filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023.json")
-# filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022.json")
+# SH <- fromJSON("./dane/SpotifyExtendedAll.json")
 # 
 # minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
-# 
-# bartekArtists <- fromJSON("./dane/SpotifyExtendedBartek/bartekArtists.json")
-# karolinaArtists <- fromJSON("./dane/SpotifyExtendedKarolina/karolinaArtists.json")
-# filipArtists <- fromJSON("./dane/SpotifyExtendedFilip/filipArtists.json")
 # 
 # playlist <- fromJSON("./dane/playlist.json")
 
 
+Songs <- fromJSON("../dane/Songs.json")
 
-bartekSongs <- fromJSON("../dane/extendedDane/extendedBartek.json")
-karolinaSongs <- fromJSON("../dane/extendedDane/extendedKarolina.json")
-filipSongs <- fromJSON("../dane/extendedDane/extendedFilip.json")
-
-bartekSH2023 <- fromJSON("../dane/SpotifyExtendedBartek/SpotifyExtendedBartek2023.json")
-
-karolinaSH2023 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023.json")
-karolinaSH2022 <- fromJSON("../dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022.json")
-
-filipSH2023 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023.json")
-filipSH2022 <- fromJSON("../dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022.json")
+SH <- fromJSON("../SpotifyExtendedAll.json")
 
 minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
 
-bartekArtists <- fromJSON("../dane/SpotifyExtendedBartek/bartekArtists.json")
-karolinaArtists <- fromJSON("../dane/SpotifyExtendedKarolina/karolinaArtists.json")
-filipArtists <- fromJSON("../dane/SpotifyExtendedFilip/filipArtists.json")
-
 playlist <- fromJSON("../dane/playlist.json")
 
-SH <- bind_rows(karolinaSH2022, karolinaSH2023, filipSH2022, filipSH2023, bartekSH2023)
 
 ####   Style   ####
 
