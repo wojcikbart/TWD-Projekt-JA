@@ -432,7 +432,6 @@ server = function(input, output, session) {
           categoryorder = "array",
           categoryarray = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
         ),
-        yaxis = list(range = c(0, 120)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
