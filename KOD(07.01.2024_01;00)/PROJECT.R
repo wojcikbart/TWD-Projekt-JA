@@ -12,6 +12,23 @@ library(shinyjs)
 
 ####   Wczytanie Danych   ####
 
+bartekSongs <- fromJSON("./dane/extendedDane/extendedBartek.json")
+karolinaSongs <- fromJSON("./dane/extendedDane/extendedKarolina.json")
+filipSongs <- fromJSON("./dane/extendedDane/extendedFilip.json")
+
+bartekSH2023 <- fromJSON("./dane/SpotifyExtendedBartek/Streaming_History_Audio_2023.json")
+
+karolinaSH2023 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2023")
+karolinaSH2022 <- fromJSON("./dane/SpotifyExtendedKarolina/SpotifyExtendedKarolina2022")
+
+filipSH2023 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2023")
+filipSH2022 <- fromJSON("./dane/SpotifyExtendedFilip/SpotifyExtendedFilip2022")
+
+minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+
+bartekArtists <- fromJSON("./dane/SpotifyExtendedBartek/bartekArtists.json")
+karolinaArtists <- fromJSON("./dane/SpotifyExtendedKarolina/karolinaArtists.json")
+filipArtists <- fromJSON("./dane/SpotifyExtendedFilip/filipArtists.json")
 
 ####   Style   ####
 
@@ -297,8 +314,6 @@ HTML_styles <- '
 
 ####   UI   ####
 
-
-
 ui <- dashboardPage(
   title = "Jestem Akustyczny",
   skin = "green",
@@ -327,8 +342,8 @@ ui <- dashboardPage(
           id = "tabs",
           h3("Features", style = "margin-left: 3px;"),
           menuItem("  Wrapped", tabName = "wrapped", icon = icon('music')),
-          menuItem("  Compatibility", tabName = "compatibility", icon = icon('music')),
-          menuItem("  Playlist", tabName = "playlist", icon = icon('music')),
+          menuItem("  Compatibility", tabName = "compatibility", icon = icon('link')),
+          menuItem("  Playlist", tabName = "playlist", icon = icon('headphones')),
           menuItem("  Summary", tabName = "summary", icon = icon('music')))))),
   dashboardBody(
     tags$head(tags$style(HTML(HTML_styles))),
