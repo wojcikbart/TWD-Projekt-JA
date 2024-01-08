@@ -13,13 +13,13 @@ library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
-# Songs <- fromJSON("./dane/Songs.json")
-# 
-# SH <- fromJSON("./dane/SpotifyExtendedAll.json")
-# 
-# minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
-# 
-# playlist <- fromJSON("../dane/playlistData.jsonli.json")
+Songs <- fromJSON("./dane/Songs.json")
+
+SH <- fromJSON("./dane/SpotifyExtendedAll.json")
+
+minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+
+playlist <- fromJSON("./dane/playlistData.json")
 
 
 Songs <- fromJSON("../dane/Songs.json")
@@ -116,7 +116,7 @@ HTML_styles <- '
       }
       
       * {
-          font-family: "Open Sans", sans-serif;
+          font-family: "Gotham", sans-serif;
           letter-spacing: -0.35px;
       }
 
@@ -275,8 +275,6 @@ HTML_styles <- '
 
 
 ####   UI   ####
-
-
 
 ui <- dashboardPage(
   title = "Jestem Akustyczny",
@@ -503,7 +501,7 @@ server = function(input, output, session) {
   
   output$left_caption <- renderUI({
     user_caption <- case_when(
-      input$user == 'Karolina' ~ 'KaroTypeBeat',
+      input$user == 'Karolina' ~ 'karo',
       input$user == 'Bartek' ~ 'KochamAK',
       input$user == 'Filip' ~ 'Jestem Akustyczny (feat. Upoważniony2115)')
     div(
@@ -523,7 +521,7 @@ server = function(input, output, session) {
   
   output$our_cover <- renderUI({
     user_image <- case_when(
-      input$user == 'Karolina' ~ 'https://media.4-paws.org/1/e/d/6/1ed6da75afe37d82757142dc7c6633a532f53a7d/VIER%20PFOTEN_2019-03-15_001-2886x1999-1920x1330.jpg',
+      input$user == 'Karolina' ~ 'https://i.pinimg.com/originals/7d/53/38/7d5338d2a67464493b745c9a417aebf7.jpg',
       input$user == 'Bartek' ~ 'https://media.npr.org/assets/img/2015/09/23/ap_836720500193-13f1674f764e5180cf9f3349cfef258d181f2b32-s1100-c50.jpg',
       input$user == 'Filip' ~ 'https://i1.sndcdn.com/artworks-6vjkU2fWoGjyNCCs-toATmQ-t500x500.jpg')
     img(
