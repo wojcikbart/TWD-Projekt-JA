@@ -9,9 +9,26 @@ library(spotifyr)
 library(tidyr)
 library(shinyWidgets)
 library(shinyjs)
+library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
+# Songs <- fromJSON("./dane/Songs.json")
+# 
+# SH <- fromJSON("./dane/SpotifyExtendedAll.json")
+# 
+# minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+# 
+# playlist <- fromJSON("../dane/playlistData.jsonli.json")
+
+
+Songs <- fromJSON("../dane/Songs.json")
+
+SH <- fromJSON("../dane/SpotifyExtendedAll.json")
+
+minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
+
+playlist <- fromJSON("../dane/playlistData.json")
 
 ####   Style   ####
 
@@ -310,8 +327,13 @@ ui <- dashboardPage(
         tabItem(
           tabName = "playlist",
           fluidPage(
-            # Tutaj kod dla playlist
-            uiOutput("playlist_title"))),
+            checkboxGroupInput("selected_people",
+                               "Wybierz osoby:",
+                               choices = unique(playlist$Who),
+                               selected = "Filip"),
+            sliderInput("song_count_slider", "Liczba piosenek:", min = 10, max = 50, value = 15),
+            uiOutput("playlist_title"),
+            uiOutput("song_list_output"))),
         tabItem(
           tabName = "summary",
           fluidPage(
@@ -368,6 +390,46 @@ server = function(input, output, session) {
   
   ####   Praca na Danych   ####
   
+  
+  ######   PLAYLIST     #######
+  
+  observe({
+    # Update the selected values in checkboxGroupInput based on the selected user
+    updateCheckboxGroupInput(session, "selected_people", selected = input$user)
+  })
+  
+  output$song_list_output <- renderUI({
+    
+    playlist_data <- playlist %>%
+      filter(Who %in% input$selected_people) %>%
+      group_by(artistName, trackName) %>%
+      summarise(
+        people = n(),
+        avg_count = round(mean(count)),
+        avg_time = mean(time),
+        image = coalesce(first(image), first(na.omit(image)), "default_value"),
+        .groups = "drop"
+      ) %>%
+      arrange(-people, -avg_count, -avg_time)
+    
+    selected_songs <- playlist_data[1:input$song_count_slider, c("artistName", "trackName", "people", "avg_count", "image")]
+    
+    formatted_songs <- paste0(
+      "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ",
+      round(selected_songs$avg_count, 2),
+      " times on average, by ",
+      selected_songs$people,
+      " people'>",
+      "<img src='", selected_songs$image, "' style='width: 50px; height: 50px; margin-right: 10px;'>",
+      seq_along(selected_songs$trackName), ". ",
+      paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
+      "</div>"
+    )
+    
+    formatted_songs <- paste("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 16px;'>", formatted_songs, "</div>", sep = "")
+    
+    HTML(formatted_songs)
+  })
   
   
   ####   Animacja   ####
