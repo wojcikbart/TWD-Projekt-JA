@@ -13,13 +13,13 @@ library(jsonlite)
 
 ####   Wczytanie Danych   ####
 
-Songs <- fromJSON("./dane/Songs.json")
+Songs <- fromJSON("../dane/Songs.json")
 
-SH <- fromJSON("./dane/SpotifyExtendedAll.json")
+SH <- fromJSON("../dane/SpotifyExtendedAll.json")
 
-minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
 
-playlist <- fromJSON("./dane/playlistData.json")
+playlist <- fromJSON("../dane/playlistData.json")
 
 
 Songs <- fromJSON("../dane/Songs.json")
@@ -156,14 +156,14 @@ HTML_styles <- '
       
       .footer {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         background-color: #000;
         flex-direction: row;
         position: fixed;
         bottom: 0;
         width: 100%;
         height: 12vh;
-        padding: 0 15px;
+        padding: 0 2vh;
         left: 0;
         z-index: 1000;
       }
@@ -180,32 +180,29 @@ HTML_styles <- '
         width: 8.5vh;
         height: 8.5vh;
         border-radius: 10%;
-        margin-right: 10px;
+        margin-right: 2vh;
       }
       
       .footer-center-panel {
-        margin: auto;
+        margin-top: 2vh;
         width: 33%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center
+        justify-content: center;
         z-index: 2000;
       }
 
       .icons {
         width: 50%;
-        margin-top: 3%;
         display: flex;
         justify-content: center;
         flex-direction: row;
       }
       
       .slider {
-        margin-top: -9%;
+        margin-top: -4vh;
         width: 100%;
-        z-index: 2000;
-        border-radius: 10px;
       }
       
       .slider .irs-handle, .slider2 .irs-handle {
@@ -348,11 +345,11 @@ ui <- dashboardPage(
       div(
         class = "footer-center-panel",
         div(
-          icon("shuffle", style = "margin: auto; font-size: 1.5em; color: #909090"),
-          actionButton(inputId = "backward", label = "", icon = icon("backward-step"), style = "z-index:4000; cursor:pointer; margin: 0 0 auto; border-radius: 5px; border: none; font-size: 1.5em; color: #909090; background-color: #000;", class = "btn-xs"),
-          icon("pause-circle", style = "margin: auto; font-size: 2em;", class = "fas"),
-          actionButton(inputId = "forward", label = "", icon = icon("forward-step"), style = "z-index:4000; cursor:pointer; margin: 0 0 auto; border-radius: 5px; border:none; font-size: 1.5em; color: #909090; background-color: #000;", class = "btn-xs"),
-          icon("repeat", style = "margin: auto; font-size: 1.5em; color: #909090"),
+          icon("shuffle", style = "margin: auto; font-size: 2.5vh; color: #909090"),
+          actionButton(inputId = "backward", label = "", icon = icon("backward-step"), style = "z-index:4000; cursor:pointer; margin: 0 0 auto; border-radius: 5px; border: none; font-size: 2.5vh; color: #909090; background-color: #000;", class = "btn-xs"),
+          icon("pause-circle", style = "margin: auto; font-size: 3.5vh;", class = "fas"),
+          actionButton(inputId = "forward", label = "", icon = icon("forward-step"), style = "z-index:4000; cursor:pointer; margin: 0 0 auto; border-radius: 5px; border:none; font-size: 2.5vh; color: #909090; background-color: #000;", class = "btn-xs"),
+          icon("repeat", style = "margin: auto; font-size: 2.5vh; color: #909090"),
           class = "icons"),
         div(
           class = "slider",
@@ -368,11 +365,11 @@ ui <- dashboardPage(
         class = "footer-right-panel",
         div(
           class = "icons2",
-          icon("square-poll-vertical", style = "margin: auto; font-size: 1.2em; color: #909090"),
-          icon("microphone", style = "margin: auto; font-size: 1.2em; color: #909090"),
-          icon("bars", style = "margin: auto; font-size: 1.2em; color: #909090"),
-          icon("speaker-deck", style = "margin: auto; font-size: 1.2em; color: #909090"),
-          icon("volume-low", style = "margin: auto; font-size: 1.2em; color: #909090"),),
+          icon("square-poll-vertical", style = "margin: auto; font-size: 2vh; color: #909090"),
+          icon("microphone", style = "margin: auto; font-size: 2vh; color: #909090"),
+          icon("bars", style = "margin: auto; font-size: 2vh; color: #909090"),
+          icon("speaker-deck", style = "margin: auto; font-size: 2vh; color: #909090"),
+          icon("volume-low", style = "margin: auto; font-size: 2vh; color: #909090"),),
         div(
           class = "slider2",
           sliderTextInput(
@@ -503,7 +500,7 @@ server = function(input, output, session) {
     user_caption <- case_when(
       input$user == 'Karolina' ~ 'karo',
       input$user == 'Bartek' ~ 'KochamAK',
-      input$user == 'Filip' ~ 'Jestem Akustyczny (feat. Upoważniony2115)')
+      input$user == 'Filip' ~ 'FylypO')
     div(
       h4(paste0(user_caption), style = "height: 100%; margin: 5px;"),
       h5(paste0(input$user), style = "height: 100%; margin: 5px; color: #909090;")
