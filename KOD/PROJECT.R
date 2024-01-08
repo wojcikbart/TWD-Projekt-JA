@@ -422,17 +422,20 @@ server = function(input, output, session) {
       " times on average, by ",
       selected_songs$people,
       " people'>",
-      "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin: 2vh 2vh 0 1.5vh; border-radius: 5px;'>",
-      seq_along(selected_songs$trackName), ". ",
+      "<div style='display: flex; align-items: center;'>",  # Flex container
+      "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin-right: 1.5vh; border-radius: 5px;'>",
+      "<div style='text-align: left;'>",  # Nested div for text, align left
+      "<span style='font-weight: bold;'>", seq_along(selected_songs$trackName), ".</span> ",
       paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
+      "</div>",
+      "</div>",
       "</div>"
     )
     
-    formatted_songs <- paste0("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 16px;'>", formatted_songs, "</div>")
+    formatted_songs <- paste0("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>", formatted_songs, "</div>")
     
     HTML(formatted_songs)
   })
-  
   
   ####   Animacja   ####
   
