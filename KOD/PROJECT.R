@@ -274,6 +274,32 @@ HTML_styles <- '
         width: 40%;
         flex-direction: row;
       }
+
+      .compatibility {
+        display: flex;
+        margin: 5.5vh 5vh 7vh 5vh;
+        flex-direction: column;
+      }
+
+      .pretty_box {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-item: stretch;
+        height: 10vh;
+      }
+
+      .compatibility_plot {
+        display: flex;
+        justify-content: center;
+        height: 40vh;
+        margin-bottom: 8vh;
+      }
+
+      .meter {
+        height: 10vh;
+        justify-content: center;
+      }
       '
 
 
@@ -299,7 +325,6 @@ ui <- dashboardPage(
             thick = TRUE,
             fill = TRUE,
             shape = "round",
-            animation = "jelly",
             choices = c(2022,2023),
             selected = 2022,
             status = "default")),
@@ -353,17 +378,26 @@ ui <- dashboardPage(
         tabItem(
           tabName = "compatibility",
           fluidPage(
-            fluidRow(
-              prettyRadioButtons(
-                inputId = "person_to_compare",
-                label = "Select a person to compare:",
-                choices = c("Karolina", "Filip", "Bartek"),
-                selected = "Filip",
-                status = "default"
-              ), 
+            # Compatibility
+            div(
+              class = 'compatibility',
               uiOutput("compatibility_title"),
-              plotlyOutput("compatibility_analysis", height = 400),
-              uiOutput("compatibility_meter"))),
+              uiOutput("radio_button_label"),
+              div(
+                class = "pretty_box",
+                prettyRadioButtons(
+                  inputId = "person_to_compare",
+                  choices = c("Karolina", "Filip", "Bartek"),
+                  label = NULL,
+                  selected = "Karolina",
+                  inline = TRUE,
+                  status = "default")),
+              div(
+                class = 'compatibility_plot',
+                plotlyOutput("compatibility_analysis")),
+              div(
+                class = 'meter',
+              uiOutput("compatibility_meter")))),
         ),
         tabItem(
           tabName = "playlist",
@@ -916,6 +950,11 @@ server = function(input, output, session) {
         class = "text-fav")
   })
   
+  output$radio_button_label <- renderUI({
+    div(h2("Choose person to compare:"),
+        style = "text-align: center; margin-bottom: 4vh; font-family: 'Gotham'; font-size: 8vh;")
+  })
+  
   
   output$playlist_title <- renderUI({
     div(h1("Playlist"),
@@ -933,7 +972,7 @@ server = function(input, output, session) {
   output$left_caption <- renderUI({
     user_caption <- case_when(
       input$user == 'Karolina' ~ 'karo',
-      input$user == 'Bartek' ~ 'KochamAK',
+      input$user == 'Bartek' ~ 'PiwoToMojePaliwo',
       input$user == 'Filip' ~ 'FylypO')
     div(
       h4(paste0(user_caption), style = "height: 100%; margin: 5px;"),
