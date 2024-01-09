@@ -312,18 +312,18 @@ HTML_styles <- '
       .checkbox {
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: stretch;
         height: 7vh;
-        font-size: 5vh;
         font-family: "Gotham";
+        font-size: 18px;
       }
 
       .slider3 {
-        width: 75%;
+        width: 200%;
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
       }
 
@@ -331,7 +331,7 @@ HTML_styles <- '
         display: flex;
         width: 100%;
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
       }
       '
@@ -440,13 +440,14 @@ ui <- dashboardPage(
               class = "playlist-panel",
               uiOutput("playlist_title"),
               h3("Choose people and number of songs for your custom playlist:",
-                 style = "text-align: center; font-family: 'Gotham'; font-size: 8vh;"),
+                 style = "text-align: left; font-family: 'Gotham', font-weight: bold;"),
               div(
                 class = 'checkbox',
                 checkboxGroupInput("selected_people",
                                      label = NULL,
-                                     choices = unique(playlist$Who),
+                                     choices = c('Karolina', 'Bartek', 'Filip', 'Danonek1', 'Danonek2'),
                                      inline = TRUE,
+                                     width = '100%',
                                      selected = "Karolina")),
               div(class = "slider-box",
                   div(class = 'slider3',
@@ -929,38 +930,37 @@ server = function(input, output, session) {
     
     selected_songs <- playlist_data[1:input$song_count_slider, c("artistName", "trackName", "people", "avg_count", "image")]
     
-    # formatted_songs <- paste0(
-    #   "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ",
-    #   round(selected_songs$avg_count, 2),
-    #   " times on average, by ",
-    #   selected_songs$people,
-    #   " people'>",
-    #   "<div style='display: flex; align-items: center;'>",
-    #   "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin-right: 1.5vh; margin-bottom: 2vh; border-radius: 5px;'>",
-    #   "<div style='text-align: left;'>", 
-    #   "<span style='font-weight: bold;'>", seq_along(selected_songs$trackName), ".</span> ",
-    #   paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
-    #   "</div>",
-    #   "</div>",
-    #   "</div>"
-    # )
-    # 
-    # formatted_songs <- paste0("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>", formatted_songs, "</div>")
-    # 
-    # HTML(formatted_songs)
+    formatted_songs <- character()
     
-    # div(
-    #   class = 'song-item',
-    #   div(
-    #     class = "image-display",
-    #     img(),
-    #     div(
-    #       class = "song-display",
-    #       h4(paste(seq_along(selected_songs$trackName), paste(selected_songs$artistName, selected_songs$trackName, sep = " - ")))
-    #     )
-    #   )
-    # )
+    for (i in seq_along(selected_songs$trackName)) {
+      song_div <- paste0(
+        "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ",
+        round(selected_songs$avg_count[i], 2),
+        " times on average, by ",
+        selected_songs$people[i],
+        " people'>",
+        "<div style='display: flex; align-items: center;'>",
+        "<span style='font-weight: bold; margin-bottom: 3vh;'>", i, ".</span>",
+        "<div style='margin-left: 2vh'></div>",
+        "<img src='", selected_songs$image[i], "' style='width: 7.5vh; height: 7.5vh; margin-bottom: 3vh; margin-right: 1.5vh; border-radius: 5px;'>",
+        "<div style='text-align: left; display: flex; flex-direction: column; justify-content: center; margin-bottom: 3vh;'>",
+        paste(selected_songs$artistName[i], selected_songs$trackName[i], sep = " - "),
+        "</div>",
+        "</div>",
+        "</div>"
+      )
+      formatted_songs <- c(formatted_songs, song_div)
+    }
     
+    formatted_songs <- paste(
+      "<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>",
+      formatted_songs,
+      "</div>",
+      collapse = "\n"
+    )
+    
+    HTML(formatted_songs)
+        
     
   })
   
@@ -1022,7 +1022,7 @@ server = function(input, output, session) {
   
   output$playlist_title <- renderUI({
     div(h1("Playlist"),
-        class = "text-fav")
+        style = "text-align: left; font-family: 'Gotham', font-weight: bold;")
   })
   
   output$summary_title <- renderUI({
