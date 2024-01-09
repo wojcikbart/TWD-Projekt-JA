@@ -11,17 +11,20 @@ library(shinyWidgets)
 library(shinyjs)
 library(jsonlite)
 library(fmsb)
+library(cowplot)
+
 
 ####   Wczytanie Danych   ####
 
-Songs <- fromJSON("./dane/Songs.json")
-
-SH <- fromJSON("./dane/SpotifyExtendedAll.json")
-
-minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
-
-playlist <- fromJSON("./dane/playlistData.json")
-
+# Songs <- fromJSON("./dane/Songs.json")
+# 
+# SH <- fromJSON("./dane/SpotifyExtendedAll.json")
+# 
+# minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
+# 
+# playlist <- fromJSON("./dane/playlistData.json")
+#
+# compatibility_data <- fromJSON("./dane/compatibility_data.json")
 
 Songs <- fromJSON("../dane/Songs.json")
 
@@ -30,6 +33,9 @@ SH <- fromJSON("../dane/SpotifyExtendedAll.json")
 minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
 
 playlist <- fromJSON("../dane/playlistData.json")
+
+compatibility_data <- fromJSON("../dane/compatibility_data.json")
+
 
 ####   Style   ####
 
@@ -346,6 +352,21 @@ ui <- dashboardPage(
             fluidRow(h3("Average listening through the day", class = "text-fav"),
                      plotlyOutput("listeningThroughDay")))),
         tabItem(
+          tabName = "compatibility",
+          fluidPage(
+            fluidRow(
+              prettyRadioButtons(
+                inputId = "person_to_compare",
+                label = "Select a person to compare:",
+                choices = c("Karolina", "Filip", "Bartek"),
+                selected = "Filip",
+                status = "default"
+              ), 
+              uiOutput("compatibility_title"),
+              plotlyOutput("compatibility_analysis", height = 400),
+              uiOutput("compatibility_meter"))),
+        ),
+        tabItem(
           tabName = "playlist",
           fluidPage(
             checkboxGroupInput("selected_people",
@@ -626,10 +647,186 @@ server = function(input, output, session) {
   
   
   
-  ######   PLAYLIST     #######
+  #########################  COMPATIBILITY  ##################################
+  
+  
+  output$compatibility_analysis <- renderPlotly({
+    data <- compatibility_data %>%
+      filter(person %in% c(input$user, input$person_to_compare))
+    
+    background <- data.frame(
+      person =  rep("Background", times = 8),
+      feature = c("Valence", "Speechiness", "Popularity", "Liveness", "Instrumentalness", "Energy", "Danceability", "Acousticness"),
+      value = rep(1, times = 8)
+      
+    )
+    
+    plot_left <- ggplot(background[background$person == "Background", ], aes(x = as.factor(feature), y = value)) +
+      geom_bar(stat = "identity", fill = "#b3b3b3", alpha = 0.1) +
+      geom_bar(data = data[data$person == input$person_to_compare, ], aes(x = as.factor(feature), y = value),
+               stat = "identity", fill = "#1db954", alpha = 0.5) +
+      geom_bar(data = data[data$person == input$user, ], aes(x = as.factor(feature), y = value),
+               stat = "identity", fill = "#1db954") +
+      coord_flip() +
+      scale_y_reverse() +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "none"
+      )
+    
+    plot_left <- ggplotly(plot_left, tooltip = "all", dynamicTicks = TRUE) %>% 
+      layout(xaxis = list(showgrid = FALSE, showline = FALSE),
+             yaxis = list(showgrid = FALSE, showline = FALSE))
+    
+    plot_right <- ggplot(background[background$person == "Background", ], aes(x = as.factor(feature), y = value)) +
+      geom_bar(stat = "identity", fill = "#b3b3b3", alpha = 0.1) +
+      geom_bar(data = data[data$person == input$user, ], aes(x = as.factor(feature), y = value),
+               stat = "identity", fill = "#1db954", alpha = 0.5) +
+      geom_bar(data = data[data$person == input$person_to_compare, ], aes(x = as.factor(feature), y = value),
+               stat = "identity", fill = "#1db954") +
+      coord_flip() +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "none"
+      )
+    
+    plot_right <- ggplotly(plot_right, tooltip = "all", dynamicTicks = TRUE) %>% 
+      layout(xaxis = list(showgrid = FALSE, showline = FALSE),
+             yaxis = list(showgrid = FALSE, showline = FALSE))
+    
+    combined_plot <- subplot(plot_left, plot_right, nrows = 1, margin = 0.1)
+    
+    column_descriptions <- c("Valence", "Speechiness", "Popularity", "Liveness", "Instrumentalness", "Energy", "Danceability", "Acousticness")
+    
+    combined_plot <- combined_plot %>%
+      add_annotations(
+        text = column_descriptions,
+        x = 0.49, 
+        y = c(0.96, 0.84, 0.72, 0.56, 0.44, 0.28, 0.16, 0.04),
+        showarrow = FALSE,
+        xref = "paper",
+        yref = "paper",
+        font = list(color = 'white', family = "Gotham")
+      )
+    
+    combined_plot <- combined_plot %>%
+      add_annotations(
+        text = c(input$user, input$person_to_compare),
+        x = c(0.13, 0.83),  
+        y = 1.07, 
+        showarrow = FALSE,
+        xref = "paper",
+        yref = "paper",
+        font = list(color = 'white', family = "Gotham", size = 20)
+      )
+    
+    combined_plot <- combined_plot %>%
+      animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+      layout(
+        showlegend = FALSE,
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        font = list(color = 'white', family = "Gotham", size = 18)
+      ) %>%
+      config(displayModeBar = FALSE)
+    
+    combined_plot
+  })
+  
+  output$compatibility_meter <- renderUI({
+    
+    artists <- SH %>% 
+      select(master_metadata_album_artist_name, master_metadata_track_name, ms_played, person) %>% 
+      group_by(master_metadata_album_artist_name, person) %>% 
+      summarise(time = sum(ms_played / 60000),
+                .groups = "keep") %>% 
+      na.omit()
+    
+    left <- artists %>% 
+      filter(person == input$user) %>% 
+      arrange(desc(time)) %>% 
+      head(100)
+    
+    left_time <- sum(left$time, na.rm = TRUE)
+    
+    left <- left %>% 
+      mutate(points = time / left_time * 100)
+    
+    right <- artists %>% 
+      filter(person == input$person_to_compare) %>% 
+      arrange(desc(time)) %>% 
+      head(100)
+    
+    right_time <- sum(right$time, na.rm = TRUE)
+    
+    right <- right %>% 
+      mutate(points = time / right_time * 100)
+    
+    merged_left <- left %>%
+      left_join(right, by = "master_metadata_album_artist_name", suffix = c("_left", "_right")) 
+    
+    merged_right <- right %>%
+      left_join(left, by = "master_metadata_album_artist_name", suffix = c("_left", "_right"))
+    
+    merged_data <- rbind(merged_left, merged_right) %>% 
+      distinct(master_metadata_album_artist_name, .keep_all = TRUE) %>% 
+      na.omit()
+    
+    merged_data <- merged_data %>% 
+      mutate(score = max(points_left, points_right))
+    
+    total_sum <- round(sum(merged_data$score, na.rm = TRUE), digits = 0)
+    
+    progress_width <- paste0(total_sum, "%")
+    
+    tags$div(
+      style = "text-align: center; font-family: 'Gotham';", 
+      tags$p("Your compatibility:", style = "font-size: 20px;"),
+      tags$div(
+        style = "display: flex; align-items: center; justify-content: center;",
+        tags$div(
+          style = "background-color: #b3b3b3; height: 20px; width: 300px; position: relative; border-radius: 10px;",  
+          tags$div(
+            id = "animated_bar",
+            style = sprintf("background-color: #1db954; height: 100%%; width: %s; position: absolute; animation: progressAnimation 2s forwards; border-radius: 10px;", progress_width)  # Adjust size and border-radius as needed
+          ),
+          tags$style(HTML("
+            @keyframes progressAnimation {
+              0% { width: 0; }
+              100% { width: 100%%; }
+            }
+          "))
+        ),
+        tags$span(
+          style = "margin-left: 10px; font-size: 16px;",
+          paste0(total_sum, "%")
+        )
+      )
+    )
+  })
+  
+  observeEvent(c(input$user, input$person_to_compare), {
+    total_sum <- input$total_sum
+    progress_width <- paste0(total_sum, "%")
+    
+    shinyjs::enable("animated_bar")
+    
+    updateProgressBar(session, "animated_bar", value = total_sum)
+  })
+  
+  
+  
+  ############################   PLAYLIST   #################################
   
   observe({
-    # Update the selected values in checkboxGroupInput based on the selected user
     updateCheckboxGroupInput(session, "selected_people", selected = input$user)
   })
   
@@ -655,9 +852,9 @@ server = function(input, output, session) {
       " times on average, by ",
       selected_songs$people,
       " people'>",
-      "<div style='display: flex; align-items: center;'>",  # Flex container
+      "<div style='display: flex; align-items: center;'>",
       "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin-right: 1.5vh; border-radius: 5px;'>",
-      "<div style='text-align: left;'>",  # Nested div for text, align left
+      "<div style='text-align: left;'>", 
       "<span style='font-weight: bold;'>", seq_along(selected_songs$trackName), ".</span> ",
       paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
       "</div>",
