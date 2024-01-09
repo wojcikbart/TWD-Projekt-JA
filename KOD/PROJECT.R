@@ -212,20 +212,20 @@ HTML_styles <- '
         width: 100%;
       }
       
-      .slider .irs-handle, .slider2 .irs-handle {
+      .slider .irs-handle, .slider2 .irs-handle, .slider3 .irs-handle {
         background-color: white !important;
         height: 13px;
         width: 13px;
         top: 22px;
       }
 
-      .slider .irs-bar, .slider2 .irs-bar{
+      .slider .irs-bar, .slider2 .irs-bar, .slider3 .irs-bar{
         top: 25px;
         height: 8px;
         background: #1DB954;
       }
 
-      .slider .irs-from, .slider .irs-to, .slider .irs-single {
+      .slider .irs-from, .slider .irs-to, .slider .irs-single, .slider3 .irs-from, .slider3 .irs-to, .slider3 .irs-single {
         color: #909090;
         text-shadow: none;
         background-color:#000;
@@ -233,7 +233,7 @@ HTML_styles <- '
         font-size: 10px;
       }
 
-      .slider .irs-min, .slider .irs-max {
+      .slider .irs-min, .slider .irs-max, .slider3 .irs-min, .slider3 .irs-max {
         color: #909090;
         text-shadow: none;
         background-color:#000;
@@ -241,12 +241,12 @@ HTML_styles <- '
         font-size: 10px;
       }
 
-      .slider .irs-min {
+      .slider .irs-min, .slider3 .irs-min {
         left: -37px;
         top: 22px;
       }
 
-      .slider .irs-max {
+      .slider .irs-max, .slider3 .irs-max {
         right: -37px;
         top: 22px
       }
@@ -285,7 +285,7 @@ HTML_styles <- '
         display: flex;
         flex-direction: row;
         justify-content: center;
-        align-item: stretch;
+        align-items: stretch;
         height: 10vh;
       }
 
@@ -293,12 +293,46 @@ HTML_styles <- '
         display: flex;
         justify-content: center;
         height: 40vh;
-        margin-bottom: 8vh;
+        margin-bottom: 15vh;
       }
 
       .meter {
         height: 10vh;
         justify-content: center;
+      }
+
+      .playlist-panel {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        margin: 5.5vh 5vh 7vh 5vh;
+        justify-content: center;
+      }
+
+      .checkbox {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: stretch;
+        height: 7vh;
+        font-size: 5vh;
+        font-family: "Gotham";
+      }
+
+      .slider3 {
+        width: 75%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .slider-box {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
       }
       '
 
@@ -402,13 +436,27 @@ ui <- dashboardPage(
         tabItem(
           tabName = "playlist",
           fluidPage(
-            checkboxGroupInput("selected_people",
-                               "Wybierz osoby:",
-                               choices = unique(playlist$Who),
-                               selected = "Filip"),
-            sliderInput("song_count_slider", "Liczba piosenek:", min = 10, max = 50, value = 15),
-            uiOutput("playlist_title"),
-            uiOutput("song_list_output"))),
+            div(
+              class = "playlist-panel",
+              uiOutput("playlist_title"),
+              h3("Choose people and number of songs for your custom playlist:",
+                 style = "text-align: center; font-family: 'Gotham'; font-size: 8vh;"),
+              div(
+                class = 'checkbox',
+                checkboxGroupInput("selected_people",
+                                     label = NULL,
+                                     choices = unique(playlist$Who),
+                                     inline = TRUE,
+                                     selected = "Karolina")),
+              div(class = "slider-box",
+                  div(class = 'slider3',
+                  sliderInput("song_count_slider",
+                              NULL,
+                              min = 10,
+                              max = 50,
+                              value = 15,
+                              ticks = FALSE))),
+              uiOutput("song_list_output")))),
         tabItem(
           tabName = "summary",
           fluidPage(
@@ -464,6 +512,8 @@ ui <- dashboardPage(
 server = function(input, output, session) {
   
   ####   Praca na Danych   ####
+  
+  #########################   WRAPPED   ######################################
   #### MINUTES PER WEEK ####
   mPWfiltered <- reactive({
     minutesPerWeek %>% 
@@ -879,25 +929,39 @@ server = function(input, output, session) {
     
     selected_songs <- playlist_data[1:input$song_count_slider, c("artistName", "trackName", "people", "avg_count", "image")]
     
-    formatted_songs <- paste0(
-      "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ",
-      round(selected_songs$avg_count, 2),
-      " times on average, by ",
-      selected_songs$people,
-      " people'>",
-      "<div style='display: flex; align-items: center;'>",
-      "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin-right: 1.5vh; border-radius: 5px;'>",
-      "<div style='text-align: left;'>", 
-      "<span style='font-weight: bold;'>", seq_along(selected_songs$trackName), ".</span> ",
-      paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
-      "</div>",
-      "</div>",
-      "</div>"
-    )
+    # formatted_songs <- paste0(
+    #   "<div class='song-item' data-toggle='tooltip' data-placement='top' title='Listened ",
+    #   round(selected_songs$avg_count, 2),
+    #   " times on average, by ",
+    #   selected_songs$people,
+    #   " people'>",
+    #   "<div style='display: flex; align-items: center;'>",
+    #   "<img src='", selected_songs$image, "' style='width: 7.5vh; height: 7.5vh; margin-right: 1.5vh; margin-bottom: 2vh; border-radius: 5px;'>",
+    #   "<div style='text-align: left;'>", 
+    #   "<span style='font-weight: bold;'>", seq_along(selected_songs$trackName), ".</span> ",
+    #   paste(selected_songs$artistName, selected_songs$trackName, sep = " - "),
+    #   "</div>",
+    #   "</div>",
+    #   "</div>"
+    # )
+    # 
+    # formatted_songs <- paste0("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>", formatted_songs, "</div>")
+    # 
+    # HTML(formatted_songs)
     
-    formatted_songs <- paste0("<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>", formatted_songs, "</div>")
+    # div(
+    #   class = 'song-item',
+    #   div(
+    #     class = "image-display",
+    #     img(),
+    #     div(
+    #       class = "song-display",
+    #       h4(paste(seq_along(selected_songs$trackName), paste(selected_songs$artistName, selected_songs$trackName, sep = " - ")))
+    #     )
+    #   )
+    # )
     
-    HTML(formatted_songs)
+    
   })
   
   ####   Animacja   ####
