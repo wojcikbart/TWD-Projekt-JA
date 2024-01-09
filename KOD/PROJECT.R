@@ -263,7 +263,6 @@ HTML_styles <- '
 
       .slider2 {
         width: 30%;
-        border-radius: 10%;
       }
 
       .slider2 .irs-min, .slider2 .irs-max, .slider2 .irs-from, .slider2 .irs-to, .slider2 .irs-single {
