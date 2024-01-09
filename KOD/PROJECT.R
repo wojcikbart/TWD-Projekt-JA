@@ -10,16 +10,17 @@ library(tidyr)
 library(shinyWidgets)
 library(shinyjs)
 library(jsonlite)
+library(fmsb)
 
 ####   Wczytanie Danych   ####
 
-Songs <- fromJSON("../dane/Songs.json")
+Songs <- fromJSON("./dane/Songs.json")
 
-SH <- fromJSON("../dane/SpotifyExtendedAll.json")
+SH <- fromJSON("./dane/SpotifyExtendedAll.json")
 
-minutesPerWeek <- fromJSON("../dane/minutesPerWeek.json")
+minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
 
-playlist <- fromJSON("../dane/playlistData.json")
+playlist <- fromJSON("./dane/playlistData.json")
 
 
 Songs <- fromJSON("../dane/Songs.json")
@@ -116,7 +117,7 @@ HTML_styles <- '
       }
       
       * {
-          font-family: "Gotham", sans-serif;
+          font-family: "Gotham";
           letter-spacing: -0.35px;
       }
 
@@ -315,12 +316,35 @@ ui <- dashboardPage(
           tabName = "wrapped",
           fluidPage(
             # Tutaj kod dla wrapped
-            uiOutput("wrapped_title"))),
-        tabItem(
-          tabName = "compatibility",
-          fluidPage(
-            # Tutaj kod dla compatibility
-            uiOutput("compatibility_title"))),
+            uiOutput("wrapped_title"),
+            fluidRow(
+              h3("Top Artists", class = "text-fav"),
+              plotlyOutput("topArtists"),
+              h3("Artist's Songs Mean Features", class = "text-fav"),
+              plotOutput("clickP"),
+              h3("Top Tracks by this artist", class = "text-fav"),
+              tableOutput("clickT")),
+            fluidRow(
+              h3("Top Tracks", class = "text-fav"),
+              plotlyOutput("topSongs")),
+            fluidRow(
+              selectInput(
+                inputId = "parameter",
+                label = "Parameter:",
+                choices = c(
+                  "Danceability" = "danceability",
+                  "Energy" = "energy",
+                  "Liveness" = "liveness",
+                  "Speechiness" = "speechiness",
+                  "Valence" = "valence",
+                  "Instrumentalness" = "instrumentalness",
+                  "Acousticness" = "acousticness"
+                )),
+              plotOutput("violin")),
+            fluidRow(h3("Average minutes listened per day of the week", class = "text-fav"),
+                     plotlyOutput("minutesPerDayOfWeek")),
+            fluidRow(h3("Average listening through the day", class = "text-fav"),
+                     plotlyOutput("listeningThroughDay")))),
         tabItem(
           tabName = "playlist",
           fluidPage(
@@ -386,6 +410,220 @@ ui <- dashboardPage(
 server = function(input, output, session) {
   
   ####   Praca na Danych   ####
+  #### MINUTES PER WEEK ####
+  mPWfiltered <- reactive({
+    minutesPerWeek %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      group_by(dayOfWeek) %>% 
+      summarise(count = sum(count), time = sum(time)) %>% 
+      mutate(time = time / count)
+  })
+  
+  output$minutesPerDayOfWeek <- renderPlotly({
+    plot_ly(mPWfiltered(),
+            x = ~dayOfWeek,
+            y = ~time,
+            type = "bar",
+            marker = list(color = '#1DB954')) %>%
+      animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+      layout(
+        xaxis = list(
+          categoryorder = "array",
+          categoryarray = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+        ),
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        bargap = 0.1,
+        font = list(color = 'white', family = "Gotham")
+      ) %>%
+      config(displayModeBar = FALSE)
+  })
+  
+  
+  #### LISTENING THROUGH THE DAY ####
+  lTDfiltered <- reactive({
+    SH %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      mutate(ts = ymd_hms(ts),
+             hour = hour(ts)) %>% 
+      group_by(hour) %>%
+      summarise(time = sum(ms_played)/ (60 * 1000)) %>%
+      group_by(hour) %>% 
+      summarise(time = mean(time)) %>% 
+      arrange(hour)
+  })
+  
+  output$listeningThroughDay <- renderPlotly({
+    plot_ly(lTDfiltered(),
+            x = ~hour,
+            y = ~time,
+            type = "bar",
+            marker = list(color = '#1DB954')) %>%
+      animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+      layout(
+        xaxis = list(
+          title = "Hour",
+          tickmode = "linear",
+          tick0 = 0,    
+          dtick = 1
+        ),
+        yaxis = list(title = "Time)"),
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        bargap = 0.1,
+        font = list(color = 'white', family = "Gotham")
+      ) %>%
+      config(displayModeBar = FALSE)
+  })
+  #### TOP ARTISTS #### 
+  
+  SHfilteredArtists <- reactive({
+    SH %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      group_by(master_metadata_album_artist_name) %>% 
+      summarise(time = sum(ms_played) / 60000) %>% 
+      arrange(-time) %>% 
+      head(10) %>% 
+      na.omit()
+  })
+  
+  output$topArtists <- renderPlotly({
+    plot_ly(SHfilteredArtists(),
+            x = ~time,
+            y = ~reorder(master_metadata_album_artist_name, time),
+            type = "bar",
+            marker = list(color = '#1DB954'),
+            orientation = 'h') %>%
+      layout(
+        xaxis = list(title = "Minutes Listened"),
+        yaxis = list(title = list(text = "Artist")),
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        bargap = 0.1,
+        font = list(color = 'white', family = "Gotham")
+      ) %>%
+      config(displayModeBar = FALSE) %>% 
+      event_register('plotly_click')
+  })
+  
+  SHfilteredArtistsSongs <- reactive({
+    SH %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      group_by(master_metadata_album_artist_name, master_metadata_track_name) %>% 
+      summarise(time = sum(ms_played) / 60000) %>% 
+      arrange(-time) %>% 
+      na.omit()
+  })
+  
+  ArtistFeaturesfiltered <- reactive({
+    Songs %>% 
+      filter(person == input$user) %>% 
+      group_by(master_metadata_album_artist_name) %>% 
+      select(master_metadata_album_artist_name, danceability:valence) %>% 
+      summarise(across(danceability:valence, mean)) %>% 
+      select(-c(mode, key, loudness)) %>% 
+      na.omit()
+  })
+  
+  output$clickT <- renderTable({
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_data <- event_data("plotly_click")
+    if (!is.null(selected_data)) {
+      selected_artist <- selected_data$y
+    }
+    selected_songs <- SHfilteredArtistsSongs() %>%
+      filter(master_metadata_album_artist_name == selected_artist) %>% 
+      head(10) %>% 
+      mutate(lp = seq_along(master_metadata_track_name)) %>% 
+      select(lp, everything())
+    colnames(selected_songs) <- c("  ", "Artist", "Track", "Minutes Listened")
+    return(selected_songs)
+  })
+  
+  output$clickP <- renderPlot({
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_data <- event_data("plotly_click")
+    if (!is.null(selected_data)) {
+      selected_artist <- selected_data$y
+    }
+    selected <- ArtistFeaturesfiltered() %>% 
+      filter(master_metadata_album_artist_name == selected_artist) %>% 
+      select(danceability:valence)
+    selected <- rbind(0, 1, selected) 
+    par(bg = "#121212", col = "white", family = "Gotham")
+    rc <- radarchart(selected, 
+                     axistype = 1, 
+                     pcol = '#1db954',
+                     pfcol = alpha('#1db954', 0.3),
+                     plwd = 2,
+                     plty = 1,
+                     cglty = 2,
+                     axislabcol = "white",
+                     cglcol = "#b3b3b3",
+                     col = "#b3b3b3",
+                     caxislabels = c(0, 0.25, 0.5, 0.75, 1),
+                     title = selected_artist)
+    return(rc)
+  })
+  
+  
+  #### TOP SONGS ####
+  
+  SHfilteredSongs <- reactive({
+    SH %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      group_by(master_metadata_track_name) %>% 
+      summarise(time = sum(ms_played) / 60000) %>% 
+      arrange(-time) %>% 
+      head(10) %>% 
+      na.omit()
+  })
+  
+  output$topSongs <- renderPlotly({
+    plot_ly(SHfilteredSongs(),
+            x = ~time,
+            y = ~reorder(master_metadata_track_name, time),
+            type = "bar",
+            marker = list(color = '#1DB954'),
+            orientation = 'h') %>%
+      layout(
+        xaxis = list(title = "Minutes Listened"),
+        yaxis = list(title = list(text = "Track Name")),
+        plot_bgcolor = "transparent",
+        paper_bgcolor = "transparent",
+        bargap = 0.1,
+        font = list(color = 'white', family = "Gotham")
+      ) %>%
+      config(displayModeBar = FALSE)
+  })
+  
+  #### VIOLIN FEATURES ####
+  output$violin <- renderPlot({
+    SongsFeaturesfiltered <- Songs %>% 
+      select(danceability:valence, person) %>% 
+      select(-c(mode, key, loudness)) %>% 
+      filter(person == input$user) %>% 
+      na.omit()
+    
+    # par(bg = "#121212", col = "white", family = "Gotham")
+    gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
+      geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.7) +
+      coord_flip() +
+      labs(title = paste("Distribution of songs by", input$parameter), y = input$parameter) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 14, colour = "white", family = "Gotham"),
+        axis.text.x = element_text(colour = "white", size = 12, family = "Gotham"),         
+        axis.text.y = element_text(colour = "white", size = 12, family = "Gotham"),         
+        text = element_text(size = 13, colour = "white", family = "Gotham"),        
+        legend.title = element_blank(),        
+        panel.background = element_rect(fill = "#121212"),       
+        plot.background = element_rect(fill = "#121212"),         
+        legend.background = element_rect(fill = "#121212")     
+      )
+    return(gv)
+  })
+  
   
   
   ######   PLAYLIST     #######
