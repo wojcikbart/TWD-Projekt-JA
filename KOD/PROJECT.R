@@ -12,7 +12,13 @@ library(shinyjs)
 library(jsonlite)
 library(fmsb)
 library(cowplot)
+library(extrafont)
+library(showtext)
 
+
+loadfonts() 
+showtext_auto()
+font_add("Gotham", "../dane/font/Gotham-Bold.otf")
 
 ####   Wczytanie Danych   ####
 
@@ -36,12 +42,11 @@ playlist <- fromJSON("../dane/playlistData.json")
 
 compatibility_data <- fromJSON("../dane/compatibility_data.json")
 
-
 ####   Style   ####
 
 HTML_styles <- '
       * {
-        font-family: "Gotham";
+        font-family: "Gotham-Bold";
       }
 
       .main-header {
@@ -123,7 +128,7 @@ HTML_styles <- '
       }
       
       * {
-          font-family: "Gotham";
+          font-family: "Gotham", sans-serif;
           letter-spacing: -0.35px;
       }
 
@@ -212,20 +217,20 @@ HTML_styles <- '
         width: 100%;
       }
       
-      .slider .irs-handle, .slider2 .irs-handle, .slider3 .irs-handle {
+      .slider .irs-handle, .slider2 .irs-handle {
         background-color: white !important;
         height: 13px;
         width: 13px;
         top: 22px;
       }
 
-      .slider .irs-bar, .slider2 .irs-bar, .slider3 .irs-bar{
+      .slider .irs-bar, .slider2 .irs-bar{
         top: 25px;
         height: 8px;
         background: #1DB954;
       }
 
-      .slider .irs-from, .slider .irs-to, .slider .irs-single, .slider3 .irs-from, .slider3 .irs-to, .slider3 .irs-single {
+      .slider .irs-from, .slider .irs-to, .slider .irs-single {
         color: #909090;
         text-shadow: none;
         background-color:#000;
@@ -233,7 +238,7 @@ HTML_styles <- '
         font-size: 10px;
       }
 
-      .slider .irs-min, .slider .irs-max, .slider3 .irs-min, .slider3 .irs-max {
+      .slider .irs-min, .slider .irs-max {
         color: #909090;
         text-shadow: none;
         background-color:#000;
@@ -241,12 +246,12 @@ HTML_styles <- '
         font-size: 10px;
       }
 
-      .slider .irs-min, .slider3 .irs-min {
+      .slider .irs-min {
         left: -37px;
         top: 22px;
       }
 
-      .slider .irs-max, .slider3 .irs-max {
+      .slider .irs-max {
         right: -37px;
         top: 22px
       }
@@ -263,6 +268,7 @@ HTML_styles <- '
 
       .slider2 {
         width: 30%;
+        border-radius: 10%;
       }
 
       .slider2 .irs-min, .slider2 .irs-max, .slider2 .irs-from, .slider2 .irs-to, .slider2 .irs-single {
@@ -275,7 +281,7 @@ HTML_styles <- '
         flex-direction: row;
       }
 
-      .compatibility {
+            .compatibility {
         display: flex;
         margin: 5.5vh 5vh 7vh 5vh;
         flex-direction: column;
@@ -798,7 +804,7 @@ server = function(input, output, session) {
         showarrow = FALSE,
         xref = "paper",
         yref = "paper",
-        font = list(color = 'white', family = "Gotham")
+        font = list(color = 'white', family = "Gotham", weight = "bold")
       )
     
     combined_plot <- combined_plot %>%
@@ -809,7 +815,7 @@ server = function(input, output, session) {
         showarrow = FALSE,
         xref = "paper",
         yref = "paper",
-        font = list(color = 'white', family = "Gotham", size = 20)
+        font = list(color = 'white', family = "Gotham", size = 20, weight = "bold")
       )
     
     combined_plot <- combined_plot %>%
