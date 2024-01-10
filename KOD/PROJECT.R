@@ -398,6 +398,7 @@ ui <- dashboardPage(
               h3("Top Tracks", class = "text-fav"),
               plotlyOutput("topSongs")),
             fluidRow(
+              h3("Features for listened tracks", class = "text-fav"),
               selectInput(
                 inputId = "parameter",
                 label = "Parameter:",
@@ -410,7 +411,7 @@ ui <- dashboardPage(
                   "Instrumentalness" = "instrumentalness",
                   "Acousticness" = "acousticness"
                 )),
-              plotOutput("violin")),
+              plotlyOutput("violin")),
             fluidRow(h3("Average minutes listened per day of the week", class = "text-fav"),
                      plotlyOutput("minutesPerDayOfWeek")),
             fluidRow(h3("Average listening through the day", class = "text-fav"),
@@ -553,15 +554,21 @@ server = function(input, output, session) {
   
   #### LISTENING THROUGH THE DAY ####
   lTDfiltered <- reactive({
-    SH %>% 
+    num_of_days <- minutesPerWeek %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      summarise(n = sum(count)) %>% 
+      select(n)
+    
+    lTD <- SH %>% 
       filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       mutate(ts = ymd_hms(ts),
              hour = hour(ts)) %>% 
       group_by(hour) %>%
-      summarise(time = sum(ms_played)/ (60 * 1000)) %>%
+      summarise(time = sum(ms_played) / (60 * 1000)) %>%
       group_by(hour) %>% 
-      summarise(time = mean(time)) %>% 
+      summarise(time = time / as.numeric(num_of_days)) %>% 
       arrange(hour)
+    return(lTD)
   })
   
   output$listeningThroughDay <- renderPlotly({
@@ -578,7 +585,7 @@ server = function(input, output, session) {
           tick0 = 0,    
           dtick = 1
         ),
-        yaxis = list(title = "Time)"),
+        yaxis = list(title = "Minutes listened"),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
@@ -586,16 +593,16 @@ server = function(input, output, session) {
       ) %>%
       config(displayModeBar = FALSE)
   })
-  #### TOP ARTISTS #### 
   
+  #### TOP ARTISTS #### 
   SHfilteredArtists <- reactive({
     SH %>% 
       filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       group_by(master_metadata_album_artist_name) %>% 
       summarise(time = sum(ms_played) / 60000) %>% 
       arrange(-time) %>% 
-      na.omit() %>% 
-      head(10) 
+      head(10) %>% 
+      na.omit() 
   })
   
   output$topArtists <- renderPlotly({
@@ -607,7 +614,7 @@ server = function(input, output, session) {
             orientation = 'h') %>%
       layout(
         xaxis = list(title = "Minutes Listened"),
-        yaxis = list(title = list(text = "Artist")),
+        yaxis = list(title = list(text = "Artist", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
@@ -618,12 +625,15 @@ server = function(input, output, session) {
   })
   
   SHfilteredArtistsSongs <- reactive({
-    SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
-      group_by(master_metadata_album_artist_name, master_metadata_track_name) %>% 
-      summarise(time = sum(ms_played) / 60000) %>% 
-      arrange(-time) %>% 
-      na.omit()
+    SH %>%
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      group_by(master_metadata_album_artist_name, master_metadata_track_name) %>%
+      summarise(time = sum(ms_played)) %>%
+      na.omit() %>%
+      mutate(song_length = Songs$duration_ms.x[match(master_metadata_track_name, Songs$master_metadata_track_name)]) %>%
+      group_by(master_metadata_album_artist_name, master_metadata_track_name) %>%
+      summarise(times_played = round(time / song_length)) %>%
+      arrange(-times_played)
   })
   
   ArtistFeaturesfiltered <- reactive({
@@ -634,6 +644,13 @@ server = function(input, output, session) {
       summarise(across(danceability:valence, mean)) %>% 
       select(-c(mode, key, loudness)) %>% 
       na.omit()
+  })
+  
+  observeEvent(c(input$person, input$backward, input$forward), {
+    plotlyProxy("clickT") %>% 
+      plotlyProxyInvoke("restyle", list(y = NULL))
+    plotlyProxy("clickP") %>% 
+      plotlyProxyInvoke("restyle", list(y = NULL))
   })
   
   output$clickT <- renderTable({
@@ -647,7 +664,7 @@ server = function(input, output, session) {
       head(10) %>% 
       mutate(lp = seq_along(master_metadata_track_name)) %>% 
       select(lp, everything())
-    colnames(selected_songs) <- c("  ", "Artist", "Track", "Minutes Listened")
+    colnames(selected_songs) <- c("  ", "Artist", "Track", "Times Played")
     return(selected_songs)
   })
   
@@ -682,24 +699,25 @@ server = function(input, output, session) {
   
   SHfilteredSongs <- reactive({
     SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2], ms_played > 30000) %>% 
       group_by(master_metadata_track_name) %>% 
-      summarise(time = sum(ms_played) / 60000) %>% 
-      arrange(-time) %>% 
-      head(10) %>% 
-      na.omit()
+      summarise(times_played = n()) %>% 
+      arrange(-times_played) %>% 
+      na.omit() %>% 
+      head(10)
   })
   
   output$topSongs <- renderPlotly({
     plot_ly(SHfilteredSongs(),
-            x = ~time,
-            y = ~reorder(master_metadata_track_name, time),
+            x = ~times_played,
+            y = ~reorder(substr(master_metadata_track_name, 1, 16), times_played),
             type = "bar",
             marker = list(color = '#1DB954'),
-            orientation = 'h') %>%
+            orientation = 'h',
+            hovertext = ~master_metadata_track_name) %>%
       layout(
         xaxis = list(title = "Minutes Listened"),
-        yaxis = list(title = list(text = "Track Name")),
+        yaxis = list(title = list(text = "Track Name", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
@@ -709,14 +727,18 @@ server = function(input, output, session) {
   })
   
   #### VIOLIN FEATURES ####
-  output$violin <- renderPlot({
+  output$violin <- renderPlotly({
+    songs <- SH %>% 
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      distinct(master_metadata_track_name)
+    
     SongsFeaturesfiltered <- Songs %>% 
-      select(danceability:valence, person) %>% 
-      select(-c(mode, key, loudness)) %>% 
-      filter(person == input$user) %>% 
+      left_join(songs, by = "master_metadata_track_name") %>% 
+      select(danceability:valence, person) %>%
+      select(-c(mode, key, loudness)) %>%
+      filter(person == input$user) %>%
       na.omit()
     
-    # par(bg = "#121212", col = "white", family = "Gotham")
     gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
       geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.7) +
       coord_flip() +
@@ -731,7 +753,11 @@ server = function(input, output, session) {
         panel.background = element_rect(fill = "#121212"),       
         plot.background = element_rect(fill = "#121212"),         
         legend.background = element_rect(fill = "#121212")     
-      )
+      ) +
+      scale_y_continuous(limits = c(0, 1))
+    gv <- ggplotly(gv)
+    gv <- gv %>% 
+      config(displayModeBar = FALSE) 
     return(gv)
   })
   
