@@ -16,9 +16,9 @@ library(extrafont)
 library(showtext)
 
 
-loadfonts() 
-showtext_auto()
-font_add("Gotham", "../dane/font/Gotham-Bold.otf")
+# loadfonts() 
+# showtext_auto()
+# font_add("Gotham", "../dane/font/Gotham-Bold.otf")
 
 ####   Wczytanie Danych   ####
 
