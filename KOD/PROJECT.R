@@ -16,7 +16,7 @@ library(extrafont)
 library(showtext)
 
 
-# loadfonts() 
+# loadfonts()
 # showtext_auto()
 # font_add("Gotham", "../dane/font/Gotham-Bold.otf")
 
@@ -61,6 +61,7 @@ HTML_styles <- '
       body {
         color: #FFFFFF;
         background-color: #000;
+        font-size: 3.2vh;
       }
       
       .content {
@@ -213,47 +214,69 @@ HTML_styles <- '
       }
       
       .slider {
-        margin-top: -4vh;
+        margin-top: -50px;
         width: 100%;
       }
       
-      .slider .irs-handle, .slider2 .irs-handle {
+      .slider .irs-handle, .slider2 .irs-handle, .slider3 .irs-handle {
+        background-color: transparent !important;
+        height: 0px;
+        width: 0px;
+        top: 25px;
+      }
+      
+      .slider:hover .irs-handle, .slider2:hover .irs-handle, .slider3:hover .irs-handle {
         background-color: white !important;
         height: 13px;
         width: 13px;
         top: 22px;
       }
 
-      .slider .irs-bar, .slider2 .irs-bar{
+      .slider .irs-line, .slider2 .irs-line, .slider3 .irs-line{
+        background: #909090;
+        height: 0.6vh;
+        border: none;
+      }
+
+      .slider .irs-bar, .slider2 .irs-bar, .slider3 .irs-bar{
         top: 25px;
-        height: 8px;
+        height: 0.6vh;
+        background: white;
+      }
+
+      
+      .slider:hover .irs-bar, .slider2:hover .irs-bar, .slider3:hover .irs-bar{
+        top: 25px;
+        height: 0.6hv;
+        width: 100%;
+        border-radius: 1vh;
         background: #1DB954;
       }
 
-      .slider .irs-from, .slider .irs-to, .slider .irs-single {
+      .slider .irs-from, .slider .irs-to, .slider .irs-single, .slider .irs-min, .slider .irs-max  {
         color: #909090;
         text-shadow: none;
         background-color:#000;
-        border-radius: 25px;
-        font-size: 10px;
+        border-radius: 1.5vh;
+        font-size: 2vh;
       }
 
-      .slider .irs-min, .slider .irs-max {
+      .slider3 .irs-from, .slider3 .irs-to, .slider3 .irs-single {
         color: #909090;
         text-shadow: none;
-        background-color:#000;
-        border-radius: 25px;
-        font-size: 10px;
+        background-color: transparent;
+        border-radius: 1.5vh;
+        font-size: 2vh;
       }
 
       .slider .irs-min {
-        left: -37px;
-        top: 22px;
+        left: - 10vh;
+        top: 2vh;
       }
 
       .slider .irs-max {
-        right: -37px;
-        top: 22px
+        right: - 10vh;
+        top: 2vh;
       }
 
       .footer-right-panel {
@@ -271,7 +294,7 @@ HTML_styles <- '
         border-radius: 10%;
       }
 
-      .slider2 .irs-min, .slider2 .irs-max, .slider2 .irs-from, .slider2 .irs-to, .slider2 .irs-single {
+      .slider2 .irs-min, .slider2 .irs-max, .slider2 .irs-from, .slider2 .irs-to, .slider2 .irs-single, .slider3 .irs-min, .slider3 .irs-max {
         display: none;
       }
 
@@ -339,6 +362,14 @@ HTML_styles <- '
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
+      }
+
+      .skin-green .sidebar a {
+        color: white;
+      }
+      
+      .main-header .sidebar-toggle {
+        font-size: 14px;
       }
       '
 
@@ -1083,7 +1114,7 @@ server = function(input, output, session) {
   
   
   output$heart <- renderUI({
-    tags$a(style = "z-index:100; cursor:pointer; margin-left: 10px; color: white;",
+    tags$a(style = "z-index:100; cursor:pointer; margin-left: 10px; color: white; font-size: 2vh;",
            href = "https://www.youtube.com/watch?v=ISoCbWBqsYI",
            target="_blank",
            icon(id = "heart", "heart")
