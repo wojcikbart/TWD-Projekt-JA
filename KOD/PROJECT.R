@@ -281,9 +281,9 @@ HTML_styles <- '
         flex-direction: row;
       }
 
-            .compatibility {
+      .compatibility {
         display: flex;
-        margin: 5.5vh 5vh 7vh 5vh;
+        margin: 5.5vh 5vh 30vh 5vh;
         flex-direction: column;
       }
 
@@ -879,7 +879,7 @@ server = function(input, output, session) {
     
     tags$div(
       style = "text-align: center; font-family: 'Gotham';", 
-      tags$p("Your compatibility:", style = "font-size: 20px;"),
+      tags$p("Your compatibility:", style = "font-size: 24px; font-weight: bold"),
       tags$div(
         style = "display: flex; align-items: center; justify-content: center;",
         tags$div(
@@ -899,7 +899,12 @@ server = function(input, output, session) {
           style = "margin-left: 10px; font-size: 16px;",
           paste0(total_sum, "%")
         )
-      )
+      ),
+      h3(paste("You have" , nrow(merged_data), "mutual artists in your TOP 100")),
+      h3("Artists that connected you:"),
+      h3(as.character(merged_data[1, "master_metadata_album_artist_name"])),
+      h3(as.character(merged_data[2, "master_metadata_album_artist_name"])),
+      h3(as.character(merged_data[3, "master_metadata_album_artist_name"]))
     )
   })
   
