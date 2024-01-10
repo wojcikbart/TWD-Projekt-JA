@@ -46,7 +46,7 @@ compatibility_data <- fromJSON("../dane/compatibility_data.json")
 
 HTML_styles <- '
       * {
-        font-family: "Gotham-Bold";
+        font-family: "Gotham";
       }
 
       .main-header {
