@@ -588,8 +588,8 @@ server = function(input, output, session) {
       group_by(master_metadata_album_artist_name) %>% 
       summarise(time = sum(ms_played) / 60000) %>% 
       arrange(-time) %>% 
-      head(10) %>% 
-      na.omit()
+      na.omit() %>% 
+      head(10) 
   })
   
   output$topArtists <- renderPlotly({
