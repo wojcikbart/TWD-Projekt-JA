@@ -1,0 +1,236 @@
+{
+  "tracks": [
+    {
+      "artist": "Lucidious",
+      "album": "Reflections",
+      "track": "Changes",
+      "uri": "spotify:track:7iGfwZbCGLq9ExyMuOeMfN"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "What's a Life",
+      "uri": "spotify:track:42uaPuTaGdNSrh8t5KtfdD"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Reflections",
+      "track": "Conviction",
+      "uri": "spotify:track:73cizOSsOC3jte6GjiQwjt"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "Moment of Silence",
+      "uri": "spotify:track:0XBf3lA3mUwWmDk5bUOiZh"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "Do the Talking",
+      "uri": "spotify:track:1iAXVMv57rfWJbkK3dhezg"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "Waiting for You",
+      "uri": "spotify:track:3hD8pp47n4PVeYxIcwlRpq"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "Face the Truth",
+      "uri": "spotify:track:0I8Nih3rolYzi74KyunXS1"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "Save Me",
+      "uri": "spotify:track:00k15kjK5BmT61TwSo000p"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Reflections",
+      "track": "Let It Rain",
+      "uri": "spotify:track:7LASSoBqUVbQLd5n9hr2pa"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Losing My Mind",
+      "track": "Losing My Mind",
+      "uri": "spotify:track:1tKd527W13Yv7jGrgsBUtZ"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Reflections",
+      "track": "Sincerely Yours",
+      "uri": "spotify:track:3U1BJiVxi4j1yjRLz2c0Gc"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Torn Between Pages",
+      "track": "No Longer Silent",
+      "uri": "spotify:track:30SomWM8c8uuaV0MFh5b8T"
+    },
+    {
+      "artist": "Lucidious",
+      "album": "Reflections",
+      "track": "Reflections",
+      "uri": "spotify:track:3I9XNqCuq7eqJgM5TgVm0l"
+    }
+  ],
+  "albums": [
+    {
+      "artist": "Imagine Dragons",
+      "album": "Evolve",
+      "uri": "spotify:album:33pt9HBdGlAbRGBHQgsZsU"
+    }
+  ],
+  "shows": [
+    {
+      "name": "La Ducha Fría",
+      "publisher": "La Ducha Fría",
+      "uri": "spotify:show:0VyEKIDzZDCPae3iPPmlkg"
+    },
+    {
+      "name": "RealLife English: Learn and Speak Confident, Natural English",
+      "publisher": "RealLife English",
+      "uri": "spotify:show:0xBw3oEE9tW79gKd9pQHdN"
+    },
+    {
+      "name": "To Fluency Podcast: English with Jack",
+      "publisher": "JDA Industries Inc.",
+      "uri": "spotify:show:43Oj7EOZGHmtNQxRoXw8HX"
+    }
+  ],
+  "episodes": [
+  ],
+  "bannedTracks": [
+  ],
+  "artists": [
+    {
+      "name": "AC/DC",
+      "uri": "spotify:artist:711MCceyCBcFnzjGY4Q7Un"
+    },
+    {
+      "name": "Adele",
+      "uri": "spotify:artist:4dpARuHxo51G3z768sgnrY"
+    },
+    {
+      "name": "Aitana",
+      "uri": "spotify:artist:7eLcDZDYHXZCebtQmVFL25"
+    },
+    {
+      "name": "Alan Walker",
+      "uri": "spotify:artist:7vk5e3vY1uw9plTHJAMwjN"
+    },
+    {
+      "name": "Alejandro Sanz",
+      "uri": "spotify:artist:5sUrlPAHlS9NEirDB8SEbF"
+    },
+    {
+      "name": "Alvaro Soler",
+      "uri": "spotify:artist:2urF8dgLVfDjunO0pcHUEe"
+    },
+    {
+      "name": "Ana Guerra",
+      "uri": "spotify:artist:3MRynBsyLGzv3IQ9Fip6hO"
+    },
+    {
+      "name": "Avicii",
+      "uri": "spotify:artist:1vCWHaC5f2uS3yhpwWbIA6"
+    },
+    {
+      "name": "Beret",
+      "uri": "spotify:artist:0ZHPrnImGh4re3TbSNkoZl"
+    },
+    {
+      "name": "Calvin Harris",
+      "uri": "spotify:artist:7CajNmpbOovFoOoasH2HaY"
+    },
+    {
+      "name": "David Guetta",
+      "uri": "spotify:artist:1Cs0zKBU1kc0i8ypK3B9ai"
+    },
+    {
+      "name": "EZVIT 810",
+      "uri": "spotify:artist:20taoPw3DvVajnkUySMckx"
+    },
+    {
+      "name": "Ed Sheeran",
+      "uri": "spotify:artist:6eUKZXaKkcviH0Ku9w2n3V"
+    },
+    {
+      "name": "Eminem",
+      "uri": "spotify:artist:7dGJo4pcD2V6oG8kP0tJRR"
+    },
+    {
+      "name": "Frédéric Chopin",
+      "uri": "spotify:artist:7y97mc3bZRFXzT2szRM4L4"
+    },
+    {
+      "name": "Harry Styles",
+      "uri": "spotify:artist:6KImCVD70vtIoJWnq6nGn3"
+    },
+    {
+      "name": "Imagine Dragons",
+      "uri": "spotify:artist:53XhwfbYqKCa1cC15pYq2q"
+    },
+    {
+      "name": "Jonas Brothers",
+      "uri": "spotify:artist:7gOdHgIoIKoe4i9Tta6qdD"
+    },
+    {
+      "name": "Marshmello",
+      "uri": "spotify:artist:64KEffDW9EtZ1y2vBYgq8T"
+    },
+    {
+      "name": "Morat",
+      "uri": "spotify:artist:5C4PDR4LnhZTbVnKWXuDKD"
+    },
+    {
+      "name": "Pablo Alborán",
+      "uri": "spotify:artist:5M9Bb4adKAgrOFOhc05Y50"
+    },
+    {
+      "name": "Queen",
+      "uri": "spotify:artist:1dfeR4HaWDbWqFHLkxsg1d"
+    },
+    {
+      "name": "Selena Gomez",
+      "uri": "spotify:artist:0C8ZW7ezQVs4URX5aX7Kqx"
+    },
+    {
+      "name": "Shawn Mendes",
+      "uri": "spotify:artist:7n2wHs1TKAczGzO7Dd2rGr"
+    },
+    {
+      "name": "Susana Cala",
+      "uri": "spotify:artist:68LgpWsaAwjflP3CLXC0LB"
+    },
+    {
+      "name": "TINI",
+      "uri": "spotify:artist:7vXDAI8JwjW531ouMGbfcp"
+    },
+    {
+      "name": "The Weeknd",
+      "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+    },
+    {
+      "name": "Twenty One Pilots",
+      "uri": "spotify:artist:3YQKmKGau1PzlVlkL1iodx"
+    },
+    {
+      "name": "Wolfgang Amadeus Mozart",
+      "uri": "spotify:artist:4NJhFmfw43RLBLjQvxDuRS"
+    },
+    {
+      "name": "pewdiepie",
+      "uri": "spotify:artist:1JOdUvDAzNy3L37rZ4Nigr"
+    }
+  ],
+  "bannedArtists": [
+  ],
+  "other": [
+  ]
+}

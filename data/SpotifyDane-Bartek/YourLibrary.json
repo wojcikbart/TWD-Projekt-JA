@@ -1,0 +1,103 @@
+{
+  "tracks": [
+    {
+      "artist": "Rupert Holmes",
+      "album": "Partners In Crime",
+      "track": "Escape (The Pina Colada Song)",
+      "uri": "spotify:track:5IMtdHjJ1OtkxbGe4zfUxQ"
+    },
+    {
+      "artist": "The Police",
+      "album": "Synchronicity",
+      "track": "Every Breath You Take",
+      "uri": "spotify:track:1JSTJqkT5qHq8MDJnJbRE1"
+    },
+    {
+      "artist": "rów babicze",
+      "album": "Jeden juch",
+      "track": "Jeden juch",
+      "uri": "spotify:track:6gnWNcHI6fI2uWgXYKXxap"
+    }
+  ],
+  "albums": [
+  ],
+  "shows": [
+    {
+      "name": "Budnik i Pokrzywiński",
+      "publisher": "Budnik i Pokrzywiński",
+      "uri": "spotify:show:4256eQWtIhdsrhzGZPGutQ"
+    },
+    {
+      "name": "P1 with Matt and Tommy",
+      "publisher": "Stak",
+      "uri": "spotify:show:20La1QIIVElT4mkc046AIV"
+    },
+    {
+      "name": "Parc Fermé - podcast o F1",
+      "publisher": "Parc Fermé",
+      "uri": "spotify:show:2NS3lnvdcVrbqn9uRQoU0a"
+    }
+  ],
+  "episodes": [
+  ],
+  "bannedTracks": [
+  ],
+  "artists": [
+    {
+      "name": "Drake",
+      "uri": "spotify:artist:3TVXtAsR1Inumwj472S9r4"
+    },
+    {
+      "name": "Eminem",
+      "uri": "spotify:artist:7dGJo4pcD2V6oG8kP0tJRR"
+    },
+    {
+      "name": "Imagine Dragons",
+      "uri": "spotify:artist:53XhwfbYqKCa1cC15pYq2q"
+    },
+    {
+      "name": "Kizo",
+      "uri": "spotify:artist:2IHoZ3RrDJIikMRsYgHjhy"
+    },
+    {
+      "name": "Mata",
+      "uri": "spotify:artist:0MIG6gMcQTSvFbKvUwK0id"
+    },
+    {
+      "name": "Oki",
+      "uri": "spotify:artist:1oxn6cQ37twQ7yGnlE3ETd"
+    },
+    {
+      "name": "PRO8L3M",
+      "uri": "spotify:artist:7v49oVVUhvIQG5EK0jkcF7"
+    },
+    {
+      "name": "Post Malone",
+      "uri": "spotify:artist:246dkjvS1zLTtiykXe5h60"
+    },
+    {
+      "name": "Sentino",
+      "uri": "spotify:artist:6DAQjwwMGZ9QgqHhIkU7H0"
+    },
+    {
+      "name": "The Beatles",
+      "uri": "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2"
+    },
+    {
+      "name": "Travis Scott",
+      "uri": "spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY"
+    },
+    {
+      "name": "rów babicze",
+      "uri": "spotify:artist:7G7Cn1swPVhPV4V3PNNXP1"
+    },
+    {
+      "name": "Żabson",
+      "uri": "spotify:artist:0QR764k0D36npmTMWx5bft"
+    }
+  ],
+  "bannedArtists": [
+  ],
+  "other": [
+  ]
+}
