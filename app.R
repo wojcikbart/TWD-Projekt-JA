@@ -36,8 +36,6 @@ Songs <- fromJSON("data/Songs.json")
 
 SH <- fromJSON("data/SpotifyExtendedAll.json")
 
-minutesPerWeek <- fromJSON("data/minutesPerWeek.json")
-
 playlist <- fromJSON("data/playlistData.json")
 
 compatibility_data <- fromJSON("data/compatibility_data.json")
@@ -563,11 +561,26 @@ server = function(input, output, session) {
   #########################   WRAPPED   ######################################
   #### MINUTES PER WEEK ####
   mPWfiltered <- reactive({
-    minutesPerWeek %>% 
+    numOfDays <- data.frame(date = seq(as.Date("2022-01-01"), as.Date("2023-12-31"), by = "days")) %>% 
+      mutate(dayOfWeek = weekdays(date), month = month(date), year = year(date)) %>% 
+      group_by(year, month, dayOfWeek) %>% 
+      summarise(count = n()) %>% 
+      filter(year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2])
+    
+    minutesPerWeek <- SH %>%
       filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      mutate(date = as.Date(ts)) %>% 
+      mutate(month = month(date),
+             week = week(date),
+             dayOfWeek = weekdays(date)) %>%
+      group_by(dayOfWeek, month, year) %>% 
+      summarise(time = sum(ms_played) / 60000)
+    
+    minutesPerWeek <- inner_join(minutesPerWeek, numOfDays, by = c('dayOfWeek', 'month', 'year')) %>% 
       group_by(dayOfWeek) %>% 
-      summarise(count = sum(count), time = sum(time)) %>% 
-      mutate(time = time / count)
+      summarise(time = sum(time) / sum (count))
+    
+    return(minutesPerWeek)
   })
   
   output$minutesPerDayOfWeek <- renderPlotly({
@@ -578,6 +591,7 @@ server = function(input, output, session) {
             marker = list(color = '#1DB954')) %>%
       animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
       layout(
+        yaxis = list(range = c(0, 500)),
         xaxis = list(
           categoryorder = "array",
           categoryarray = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
@@ -593,8 +607,12 @@ server = function(input, output, session) {
   
   #### LISTENING THROUGH THE DAY ####
   lTDfiltered <- reactive({
-    num_of_days <- minutesPerWeek %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+    numOfDays <- data.frame(date = seq(as.Date("2022-01-01"), as.Date("2023-12-31"), by = "days")) %>% 
+      mutate(day_of_week = weekdays(date), month = month(date), year = year(date)) %>% 
+      group_by(year, month, day_of_week) %>% 
+      summarise(count = n()) %>% 
+      filter(year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      group_by(year) %>% 
       summarise(n = sum(count)) %>% 
       select(n)
     
@@ -605,7 +623,7 @@ server = function(input, output, session) {
       group_by(hour) %>%
       summarise(time = sum(ms_played) / (60 * 1000)) %>%
       group_by(hour) %>% 
-      summarise(time = time / as.numeric(num_of_days)) %>% 
+      summarise(time = time / as.numeric(numOfDays)) %>% 
       arrange(hour)
     return(lTD)
   })
@@ -624,7 +642,7 @@ server = function(input, output, session) {
           tick0 = 0,    
           dtick = 1
         ),
-        yaxis = list(title = "Minutes listened"),
+        yaxis = list(title = "Minutes listened", range = c(0 , 40)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
@@ -652,7 +670,7 @@ server = function(input, output, session) {
             marker = list(color = '#1DB954'),
             orientation = 'h') %>%
       layout(
-        xaxis = list(title = "Minutes Listened"),
+        xaxis = list(title = "Minutes Listened", range = c(0, 9000)),
         yaxis = list(title = list(text = "Artist", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
@@ -729,7 +747,7 @@ server = function(input, output, session) {
                      cglcol = "#b3b3b3",
                      col = "#b3b3b3",
                      caxislabels = c(0, 0.25, 0.5, 0.75, 1),
-                     title = selected_artist)
+                     title = " ")
     return(rc)
   })
   
@@ -755,7 +773,7 @@ server = function(input, output, session) {
             orientation = 'h',
             hovertext = ~master_metadata_track_name) %>%
       layout(
-        xaxis = list(title = "Minutes Listened"),
+        xaxis = list(title = "Times Played", range = c(0, 170)),
         yaxis = list(title = list(text = "Track Name", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
