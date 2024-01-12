@@ -15,10 +15,10 @@ library(cowplot)
 library(extrafont)
 library(showtext)
 
-
+# font_import()
 # loadfonts()
 # showtext_auto()
-# font_add("Gotham", "../dane/font/Gotham-Bold.otf")
+# font_add("Gotham", "data/font/Gotham-Bold.otf")
 
 ####   Wczytanie Danych   ####
 
@@ -92,7 +92,7 @@ HTML_styles <- '
       
       .sidebar {
         display: block !important;
-        width: 40vh;
+        width: 20vw;
         height: calc(88vh - 50px);
         padding: 0px;
         background-color: #000;
@@ -146,7 +146,6 @@ HTML_styles <- '
       }
 
       .text-fav {
-        margin-left:30px;
         font-weight:bold;
       }
       
@@ -377,6 +376,92 @@ HTML_styles <- '
       .main-header .sidebar-toggle {
         font-size: 14px;
       }
+
+      .wrapped{
+        display: flex;
+        flex-direction: column;
+        padding: 0 2vw;
+      }
+
+      .11 {
+        display: flex;
+        flex-direction: column:
+        width: 75%;
+      }
+
+      .12{
+        display: flex;
+        flex-direction: column:
+        width: 25%;
+      }
+
+      .row1, .row2, .row3, .row4 {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .21, .22, .31, .32, .41, .42 {
+        display: flex;
+        flex-direction: column:
+        width: 50%;
+      }
+
+      .dataTables_wrapper table {
+        font-size: 1vh !important;
+      }
+
+      .selectize-control.single .selectize-input, .selectize-control.single .selectize-input input {
+        cursor: pointer;
+        background-color: #000;
+        border-color: #909090;
+        color: white;
+      }
+
+      .selectize-dropdown [data-selectable].option.active {
+        opacity: 1;
+        cursor: pointer;
+        color: black;
+      }
+
+      .selectize-dropdown-content {
+        padding: 5px 0;
+        background-color: #000;
+        border-color: #909090;
+        color: white
+      }
+
+      .selectize-control.single .selectize-input.input-activate {
+        cursor: text;
+        background-color: #000;
+        border-color: #909090;
+        color: white
+      }
+
+      .selectize-input.full {
+        background-color: #fff;
+      }
+
+      .selectize-input, .selectize-control.single .selectize-input.input-active {
+        background: #000;
+      }
+
+      .radar {
+        margin: 0 0 0 -17vw;
+        z-index: 1;
+        overflow: hidden;
+      }
+      
+      .21 {
+        position: absolute;
+        z-index: 200;
+      }
+
+      .22 {
+        position: relative;
+        z-index: 100;
+      }
       '
 
 
@@ -387,9 +472,9 @@ ui <- dashboardPage(
   skin = "green",
   dashboardHeader(
     title = img(src = "https://raw.githubusercontent.com/FylypO/DVT---Project/59d779c8d9e780649209a29821fac10dcf4f2db2/logo.png", style = 'height: 40px;'),
-    titleWidth = '40vh'),
+    titleWidth = '20vw'),
   dashboardSidebar(
-    width = '40vh',
+    width = '20vw',
     div(
       class = 'sidebar',
       div(
@@ -425,34 +510,59 @@ ui <- dashboardPage(
             # Tutaj kod dla wrapped
             uiOutput("wrapped_title"),
             fluidRow(
-              h3("Top Artists", class = "text-fav"),
-              plotlyOutput("topArtists"),
-              h3("Artist's Songs Mean Features", class = "text-fav"),
-              plotOutput("clickP"),
-              h3("Top Tracks by this artist", class = "text-fav"),
-              tableOutput("clickT")),
-            fluidRow(
-              h3("Top Tracks", class = "text-fav"),
-              plotlyOutput("topSongs")),
-            fluidRow(
-              h3("Features for listened tracks", class = "text-fav"),
-              selectInput(
-                inputId = "parameter",
-                label = "Parameter:",
-                choices = c(
-                  "Danceability" = "danceability",
-                  "Energy" = "energy",
-                  "Liveness" = "liveness",
-                  "Speechiness" = "speechiness",
-                  "Valence" = "valence",
-                  "Instrumentalness" = "instrumentalness",
-                  "Acousticness" = "acousticness"
-                )),
-              plotlyOutput("violin")),
-            fluidRow(h3("Average minutes listened per day of the week", class = "text-fav"),
-                     plotlyOutput("minutesPerDayOfWeek")),
-            fluidRow(h3("Average listening through the day", class = "text-fav"),
-                     plotlyOutput("listeningThroughDay")))),
+              div(
+                class = 'wrapped',
+                div(
+                  class = 'row1',
+                  # div(
+                  #   class = '11',
+                  #   h3('Some stats', class = 'text-fav', style = 'width:15vw;')),
+                  div(
+                    class = '12',
+                    h3("Top Artists", class = "text-fav"),
+                    plotlyOutput("topArtists", height = '40vh', width = '70vw'))),
+                div(
+                  class = 'row2',
+                  div(
+                    class = '21',
+                    uiOutput("tracks"),
+                    uiOutput("clickT")),
+                  div(
+                    class = '22',
+                    h3("Artist's Songs Mean Features", style = "font-weight: bold; margin: 0; z-index: 10000; position: absolute;"),
+                    div(
+                      class = 'radar',
+                      plotOutput("clickP", height = "60vh", width = '70vw')))),
+                div(
+                  class = 'row3',
+                  div(
+                    class = '31',
+                    h3("Top 10 tracks by streams", class = "text-fav", style = 'margin-top: 5px;'),
+                    plotlyOutput("topSongs", height = "30vh", width = '35vw')),
+                  div(
+                    class = '32',
+                    selectInput(
+                      inputId = "parameter",
+                      label = NULL,
+                      choices = c(
+                        "Danceability" = "danceability",
+                        "Energy" = "energy",
+                        "Liveness" = "liveness",
+                        "Speechiness" = "speechiness",
+                        "Valence" = "valence",
+                        "Instrumentalness" = "instrumentalness",
+                        "Acousticness" = "acousticness")),
+                    plotlyOutput("violin", height = "30vh", width = '35vw'))),
+                div(
+                  class = 'row4',
+                  div(
+                    class = '41',
+                    h3("Average minutes listened per day of the week", class = "text-fav"),
+                    plotlyOutput("minutesPerDayOfWeek", height = "30vh", width = '35vw')),
+                  div(
+                    class = '42',
+                    h3("Average listening through the day", class = "text-fav"),
+                    plotlyOutput("listeningThroughDay", height = "30vh", width = '40vw'))))))),
         tabItem(
           tabName = "compatibility",
           fluidPage(
@@ -584,6 +694,9 @@ server = function(input, output, session) {
   })
   
   output$minutesPerDayOfWeek <- renderPlotly({
+    
+    y_ticks <- pretty(c(max(mPWfiltered()$time), 0), n = 4)
+    
     plot_ly(mPWfiltered(),
             x = ~dayOfWeek,
             y = ~time,
@@ -591,8 +704,13 @@ server = function(input, output, session) {
             marker = list(color = '#1DB954')) %>%
       animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
       layout(
-        yaxis = list(range = c(0, 500)),
+        yaxis = list(
+          title = "Minutes listened",
+          tickvals = y_ticks,
+          gridcolor = '#606060',
+          range = c(0, max(mPWfiltered()$time))),
         xaxis = list(
+          title = 'Day',
           categoryorder = "array",
           categoryarray = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
         ),
@@ -629,6 +747,8 @@ server = function(input, output, session) {
   })
   
   output$listeningThroughDay <- renderPlotly({
+    y_ticks <- pretty(lTDfiltered()$time, n = 4)
+    
     plot_ly(lTDfiltered(),
             x = ~hour,
             y = ~time,
@@ -642,7 +762,12 @@ server = function(input, output, session) {
           tick0 = 0,    
           dtick = 1
         ),
-        yaxis = list(title = "Minutes listened", range = c(0 , 40)),
+        yaxis = list(
+          title = "Minutes listened",
+          tickvals = y_ticks,
+          gridcolor = '#606060',
+          range = c(0, max(lTDfiltered()$time))
+        ),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
@@ -663,6 +788,9 @@ server = function(input, output, session) {
   })
   
   output$topArtists <- renderPlotly({
+    
+    x_ticks <- pretty(c(max(SHfilteredArtists()$time),0), n = 7)
+    
     plot_ly(SHfilteredArtists(),
             x = ~time,
             y = ~reorder(master_metadata_album_artist_name, time),
@@ -670,7 +798,7 @@ server = function(input, output, session) {
             marker = list(color = '#1DB954'),
             orientation = 'h') %>%
       layout(
-        xaxis = list(title = "Minutes Listened", range = c(0, 9000)),
+        xaxis = list(title = "Minutes Listened", ticks = x_ticks, gridcolor = "#606060"),
         yaxis = list(title = list(text = "Artist", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
@@ -711,18 +839,28 @@ server = function(input, output, session) {
   })
   
   output$clickT <- renderTable({
+    width = '35vw'
     selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
     selected_data <- event_data("plotly_click")
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
     selected_songs <- SHfilteredArtistsSongs() %>%
-      filter(master_metadata_album_artist_name == selected_artist) %>% 
-      head(10) %>% 
-      mutate(lp = seq_along(master_metadata_track_name)) %>% 
+      filter(master_metadata_album_artist_name == selected_artist) %>%
+      head(5) %>%
+      mutate(lp = seq_along(master_metadata_track_name), times_played = as.integer(times_played), master_metadata_album_artist_name = '') %>%
       select(lp, everything())
-    colnames(selected_songs) <- c("  ", "Artist", "Track", "Times Played")
+    colnames(selected_songs) <- c("  ", "", "Track", "Streams")
     return(selected_songs)
+  }, width = '35vw')
+  
+  output$tracks <- renderText({
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_data <- event_data("plotly_click")
+    if (!is.null(selected_data)) {
+      selected_artist <- selected_data$y
+    }
+    return(paste0("Top tracks by: ", selected_artist))
   })
   
   output$clickP <- renderPlot({
@@ -765,6 +903,9 @@ server = function(input, output, session) {
   })
   
   output$topSongs <- renderPlotly({
+    
+    x_ticks <- pretty(c(max(SHfilteredSongs()$times_played),0), n = 5)
+    
     plot_ly(SHfilteredSongs(),
             x = ~times_played,
             y = ~reorder(substr(master_metadata_track_name, 1, 16), times_played),
@@ -773,7 +914,7 @@ server = function(input, output, session) {
             orientation = 'h',
             hovertext = ~master_metadata_track_name) %>%
       layout(
-        xaxis = list(title = "Times Played", range = c(0, 170)),
+        xaxis = list(title = "Times Played", gridcolor = '#606060', ticks = x_ticks),
         yaxis = list(title = list(text = "Track Name", standoff = 10)),
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
@@ -799,7 +940,7 @@ server = function(input, output, session) {
     gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
       geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.7) +
       coord_flip() +
-      labs(title = paste("Distribution of songs by", input$parameter), y = input$parameter) +
+      labs(title = paste("Distribution of listened tracks by", input$parameter), y = input$parameter) +
       theme_minimal() +
       theme(
         plot.title = element_text(size = 14, colour = "white", family = "Gotham"),
@@ -985,9 +1126,9 @@ server = function(input, output, session) {
       ),
       h3(paste("You have" , nrow(merged_data), "mutual artists in your TOP 100")),
       h3("Artists that connected you:"),
-      h3(as.character(merged_data[1, "master_metadata_album_artist_name"])),
-      h3(as.character(merged_data[2, "master_metadata_album_artist_name"])),
-      h3(as.character(merged_data[3, "master_metadata_album_artist_name"]))
+      h4(as.character(merged_data[1, "master_metadata_album_artist_name"])),
+      h4(as.character(merged_data[2, "master_metadata_album_artist_name"])),
+      h4(as.character(merged_data[3, "master_metadata_album_artist_name"]))
     )
   })
   
