@@ -68,6 +68,7 @@ HTML_styles <- '
         color: #FFFFFF;
         background-color: #000;
         font-size: 3.2vh;
+        font-family: "Gotham";
       }
       
       .content {
@@ -143,10 +144,6 @@ HTML_styles <- '
         display: inline-block;
         margin-left: 20px;
         margin-bottom: 55px;
-      }
-
-      .text-fav {
-        font-weight:bold;
       }
       
       .pretty .state label {
@@ -400,12 +397,14 @@ HTML_styles <- '
         flex-direction: row;
         width: 100%;
         justify-content: space-between;
+        margin-bottom: 8vh;
       }
 
       .21, .22, .31, .32, .41, .42 {
         display: flex;
         flex-direction: column:
         width: 50%;
+        justify-content: center;
       }
 
       .dataTables_wrapper table {
@@ -429,14 +428,14 @@ HTML_styles <- '
         padding: 5px 0;
         background-color: #000;
         border-color: #909090;
-        color: white
+        color: white;
       }
 
       .selectize-control.single .selectize-input.input-activate {
         cursor: text;
         background-color: #000;
         border-color: #909090;
-        color: white
+        color: white;
       }
 
       .selectize-input.full {
@@ -448,19 +447,18 @@ HTML_styles <- '
       }
 
       .radar {
-        margin: 0 0 0 -17vw;
+        display: flex;
+        margin: 0 0 0 -15vw;
         z-index: 1;
-        overflow: hidden;
-      }
-      
-      .21 {
-        position: absolute;
-        z-index: 200;
       }
 
-      .22 {
-        position: relative;
-        z-index: 100;
+      .row2 {
+        margin-bottom: 1vh;
+      }
+
+      .selectize-dropdown .selected {
+        background-color: #1DB954;
+        color: #fff
       }
       '
 
@@ -516,20 +514,20 @@ ui <- dashboardPage(
                   class = 'row1',
                   # div(
                   #   class = '11',
-                  #   h3('Some stats', class = 'text-fav', style = 'width:15vw;')),
+                  #   h3('Some stats', style = 'width:15vw; font-weight: bold;')),
                   div(
                     class = '12',
-                    h3("Top Artists", class = "text-fav"),
-                    plotlyOutput("topArtists", height = '40vh', width = '70vw'))),
+                    h3("Top Artists", style = "font-weight: bold; text-align: center;"),
+                    plotlyOutput("topArtists", height = '50vh', width = '70vw'))),
                 div(
                   class = 'row2',
                   div(
                     class = '21',
-                    uiOutput("tracks"),
-                    uiOutput("clickT")),
+                    h3(uiOutput("tracks", style = "font-weight: bold; text-align: center; margin-bottom: 4vh"), style = "margin: 0;"),
+                    uiOutput("clickT"), style = "z-index: 1000;"),
                   div(
                     class = '22',
-                    h3("Artist's Songs Mean Features", style = "font-weight: bold; margin: 0; z-index: 10000; position: absolute;"),
+                    h3("Artist's Songs Mean Features", style = "font-weight: bold; z-index: 10000; position: absolute; text-align: center; margin: 0 0 0 12vw;"),
                     div(
                       class = 'radar',
                       plotOutput("clickP", height = "60vh", width = '70vw')))),
@@ -537,8 +535,8 @@ ui <- dashboardPage(
                   class = 'row3',
                   div(
                     class = '31',
-                    h3("Top 10 tracks by streams", class = "text-fav", style = 'margin-top: 5px;'),
-                    plotlyOutput("topSongs", height = "30vh", width = '35vw')),
+                    h3("Top 10 tracks by streams", style = 'margin-top: 5px; font-weight: bold; text-align: center;'),
+                    plotlyOutput("topSongs", height = "40vh", width = '35vw')),
                   div(
                     class = '32',
                     selectInput(
@@ -552,17 +550,17 @@ ui <- dashboardPage(
                         "Valence" = "valence",
                         "Instrumentalness" = "instrumentalness",
                         "Acousticness" = "acousticness")),
-                    plotlyOutput("violin", height = "30vh", width = '35vw'))),
+                    plotlyOutput("violin", height = "40vh", width = '35vw'))),
                 div(
                   class = 'row4',
                   div(
                     class = '41',
-                    h3("Average minutes listened per day of the week", class = "text-fav"),
-                    plotlyOutput("minutesPerDayOfWeek", height = "30vh", width = '35vw')),
+                    h3("Average minutes listened per day of the week", style = "font-weight: bold; text-align: center;"),
+                    plotlyOutput("minutesPerDayOfWeek", height = "40vh", width = '35vw')),
                   div(
                     class = '42',
-                    h3("Average listening through the day", class = "text-fav"),
-                    plotlyOutput("listeningThroughDay", height = "30vh", width = '40vw'))))))),
+                    h3("Average listening through the day", style = "font-weight: bold; text-align: center;"),
+                    plotlyOutput("listeningThroughDay", height = "40vh", width = '40vw'))))))),
         tabItem(
           tabName = "compatibility",
           fluidPage(
@@ -1236,17 +1234,17 @@ server = function(input, output, session) {
     div(
       h1(
         paste0("Custom Wrapped for: ", input$user),
-        class = "text-fav"),
+        style = "font-weight: bold;"),
       h3(
         paste0("from ", input$Months[1], "-", input$year, " to ", input$Months[2], '-', input$year),
-        class = "text-fav",
+        style = "font-weight: bold;",
         style = "margin-top:-5px;"))
   })
   
   
   output$compatibility_title <- renderUI({
     div(h1("Compatibility"),
-        class = "text-fav")
+        style = "font-weight: bold;")
   })
   
   output$radio_button_label <- renderUI({
@@ -1262,7 +1260,7 @@ server = function(input, output, session) {
   
   output$summary_title <- renderUI({
     div(h1("Summary"),
-        class = "text-fav")
+        style = "font-weight: bold;")
   })
   
   
