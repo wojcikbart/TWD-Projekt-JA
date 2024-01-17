@@ -535,7 +535,7 @@ ui <- dashboardPage(
                   class = 'row3',
                   div(
                     class = '31',
-                    h3("Top 10 tracks by streams", style = 'margin-top: 5px; font-weight: bold; text-align: center;'),
+                    h3("Top tracks by number of streams", style = 'margin-top: 5px; font-weight: bold; text-align: center;'),
                     plotlyOutput("topSongs", height = "40vh", width = '35vw')),
                   div(
                     class = '32',
@@ -938,10 +938,10 @@ server = function(input, output, session) {
     gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
       geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.8) +
       coord_flip() +
-      labs(title = paste("Distribution of listened tracks by", input$parameter), y = " ", x = " ") +
+      labs(title = paste("Tracks distribution by", input$parameter), y = " ", x = " ") +
       theme_minimal() +
       theme(
-        plot.title = element_text(size = 14, colour = "white", family = "Gotham"),
+        plot.title = element_text(size = 16, colour = "white", family = "Gotham", face = 2),
         axis.text.x = element_text(colour = "white", size = 10, family = "Gotham"),         
         axis.text.y = element_blank(),         
         text = element_text(size = 13, colour = "white", family = "Gotham"),        
