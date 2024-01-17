@@ -858,7 +858,7 @@ server = function(input, output, session) {
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
-    return(paste0("Top tracks by: ", selected_artist))
+    return(paste0("Top tracks by ", selected_artist))
   })
   
   output$clickP <- renderPlot({
@@ -871,7 +871,7 @@ server = function(input, output, session) {
       filter(master_metadata_album_artist_name == selected_artist) %>% 
       select(danceability:valence)
     selected <- rbind(0, 1, selected) 
-    par(bg = "#121212", col = "white", family = "Gotham")
+   par (bg = "#121212", col = "white", family = "Gotham", font = 2)
     rc <- radarchart(selected, 
                      axistype = 1, 
                      pcol = '#1db954',
@@ -910,7 +910,7 @@ server = function(input, output, session) {
             type = "bar",
             marker = list(color = '#1DB954'),
             orientation = 'h',
-            hovertext = ~master_metadata_track_name) %>%
+            hovertext = ~paste("Full Track Name: ", master_metadata_track_name)) %>%
       layout(
         xaxis = list(title = "Times Played", gridcolor = '#606060', ticks = x_ticks),
         yaxis = list(title = list(text = "Track Name", standoff = 10)),
@@ -926,26 +926,28 @@ server = function(input, output, session) {
   output$violin <- renderPlotly({
     songs <- SH %>% 
       filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
-      distinct(master_metadata_track_name)
+      select(master_metadata_track_name)
     
     SongsFeaturesfiltered <- Songs %>% 
-      left_join(songs, by = "master_metadata_track_name") %>% 
+      filter(person == input$user) %>% 
+      right_join(songs, by = "master_metadata_track_name") %>% 
       select(danceability:valence, person) %>%
       select(-c(mode, key, loudness)) %>%
-      filter(person == input$user) %>%
       na.omit()
-    
+
     gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
-      geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.7) +
+      geom_violin(fill = "#1DB954", color = "#1DB954", alpha = 0.8) +
       coord_flip() +
-      labs(title = paste("Distribution of listened tracks by", input$parameter), y = input$parameter) +
+      labs(title = paste("Distribution of listened tracks by", input$parameter), y = " ", x = " ") +
       theme_minimal() +
       theme(
         plot.title = element_text(size = 14, colour = "white", family = "Gotham"),
-        axis.text.x = element_text(colour = "white", size = 12, family = "Gotham"),         
-        axis.text.y = element_text(colour = "white", size = 12, family = "Gotham"),         
+        axis.text.x = element_text(colour = "white", size = 10, family = "Gotham"),         
+        axis.text.y = element_blank(),         
         text = element_text(size = 13, colour = "white", family = "Gotham"),        
-        legend.title = element_blank(),        
+        legend.title = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.grid.major = element_line(color = "#b3b3b3", size = 0.1),
         panel.background = element_rect(fill = "#121212"),       
         plot.background = element_rect(fill = "#121212"),         
         legend.background = element_rect(fill = "#121212")     
@@ -1298,7 +1300,6 @@ server = function(input, output, session) {
       width = "8.5vh"
     )
   })
-  
   
 }
 
