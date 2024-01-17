@@ -43,9 +43,6 @@ compatibility_data <- fromJSON("data/compatibility_data.json")
 ####   Style   ####
 
 HTML_styles <- '
-      * {
-        font-family: "Gotham";
-      }
 
       .main-header {
         position: fixed;
@@ -68,7 +65,6 @@ HTML_styles <- '
         color: #FFFFFF;
         background-color: #000;
         font-size: 3.2vh;
-        font-family: "Gotham";
       }
       
       .content {
@@ -136,7 +132,6 @@ HTML_styles <- '
       }
       
       * {
-          font-family: "Gotham", sans-serif;
           letter-spacing: -0.35px;
       }
 
@@ -308,7 +303,7 @@ HTML_styles <- '
 
       .compatibility {
         display: flex;
-        margin: 5.5vh 5vh 30vh 5vh;
+        margin: 0 0 30vh 0;
         flex-direction: column;
       }
 
@@ -336,7 +331,7 @@ HTML_styles <- '
         display: flex;
         width: 100%;
         flex-direction: column;
-        margin: 5.5vh 5vh 7vh 5vh;
+        margin: 0 0 7vh 0;
         justify-content: center;
       }
 
@@ -346,7 +341,6 @@ HTML_styles <- '
         justify-content: flex-start;
         align-items: stretch;
         height: 7vh;
-        font-family: "Gotham";
         font-size: 18px;
       }
 
@@ -448,7 +442,7 @@ HTML_styles <- '
 
       .radar {
         display: flex;
-        margin: 0 0 0 -15vw;
+        margin: -4vh 0 0 -15vw;
         z-index: 1;
       }
 
@@ -459,6 +453,14 @@ HTML_styles <- '
       .selectize-dropdown .selected {
         background-color: #1DB954;
         color: #fff
+      }
+
+      h1 {
+        font-weight: bold;
+      }
+
+      .playlist-panel2 {
+        margin-left: 3vw;
       }
       '
 
@@ -523,11 +525,11 @@ ui <- dashboardPage(
                   class = 'row2',
                   div(
                     class = '21',
-                    h3(uiOutput("tracks", style = "font-weight: bold; text-align: center; margin-bottom: 4vh"), style = "margin: 0;"),
-                    uiOutput("clickT"), style = "z-index: 1000;"),
+                    h3(uiOutput("tracks", style = "font-weight: bold; text-align: center; margin-bottom: 4vh;"), style = "margin: 0;"),
+                    uiOutput("clickT"), style = "z-index: 400;"),
                   div(
                     class = '22',
-                    h3("Artist's Songs Mean Features", style = "font-weight: bold; z-index: 10000; position: absolute; text-align: center; margin: 0 0 0 12vw;"),
+                    h3("Artist's Songs Mean Features", style = "font-weight: bold; z-index: 300; text-align: center; margin: 0 0 0 -12vw; position: relative;"),
                     div(
                       class = 'radar',
                       plotOutput("clickP", height = "60vh", width = '70vw')))),
@@ -591,25 +593,27 @@ ui <- dashboardPage(
             div(
               class = "playlist-panel",
               uiOutput("playlist_title"),
-              h3("Choose people and number of songs for your custom playlist:",
-                 style = "text-align: left; font-family: 'Gotham', font-weight: bold;"),
               div(
-                class = 'checkbox',
-                checkboxGroupInput("selected_people",
-                                     label = NULL,
-                                     choices = c('Karolina', 'Bartek', 'Filip', 'Danonek1', 'Danonek2'),
-                                     inline = TRUE,
-                                     width = '100%',
-                                     selected = "Karolina")),
-              div(class = "slider-box",
-                  div(class = 'slider3',
-                  sliderInput("song_count_slider",
-                              NULL,
-                              min = 10,
-                              max = 50,
-                              value = 15,
-                              ticks = FALSE))),
-              uiOutput("song_list_output")))),
+                class = 'playlist-panel2',
+                h3("Choose people and number of songs for your custom playlist:",
+                 style = "text-align: left; font-weight: bold; margin-bottom: 5vh;"),
+                div(
+                  class = 'checkbox',
+                  checkboxGroupInput("selected_people",
+                                       label = NULL,
+                                       choices = c('Karolina', 'Bartek', 'Filip', 'Danonek1', 'Danonek2'),
+                                       inline = TRUE,
+                                       width = '100%',
+                                       selected = "Karolina")),
+                div(class = "slider-box",
+                    div(class = 'slider3',
+                    sliderInput("song_count_slider",
+                                NULL,
+                                min = 10,
+                                max = 50,
+                                value = 15,
+                                ticks = FALSE))),
+                uiOutput("song_list_output"))))),
         tabItem(
           tabName = "summary",
           fluidPage(
@@ -715,7 +719,7 @@ server = function(input, output, session) {
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
-        font = list(color = 'white', family = "Gotham")
+        font = list(color = 'white')
       ) %>%
       config(displayModeBar = FALSE)
   })
@@ -769,7 +773,7 @@ server = function(input, output, session) {
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
-        font = list(color = 'white', family = "Gotham")
+        font = list(color = 'white')
       ) %>%
       config(displayModeBar = FALSE)
   })
@@ -801,7 +805,7 @@ server = function(input, output, session) {
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
-        font = list(color = 'white', family = "Gotham")
+        font = list(color = 'white')
       ) %>%
       config(displayModeBar = FALSE) %>% 
       event_register('plotly_click')
@@ -871,7 +875,7 @@ server = function(input, output, session) {
       filter(master_metadata_album_artist_name == selected_artist) %>% 
       select(danceability:valence)
     selected <- rbind(0, 1, selected) 
-   par (bg = "#121212", col = "white", family = "Gotham", font = 2)
+   par (bg = "#121212", col = "white", font = 2)
     rc <- radarchart(selected, 
                      axistype = 1, 
                      pcol = '#1db954',
@@ -917,7 +921,7 @@ server = function(input, output, session) {
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
         bargap = 0.1,
-        font = list(color = 'white', family = "Gotham")
+        font = list(color = 'white')
       ) %>%
       config(displayModeBar = FALSE)
   })
@@ -941,10 +945,10 @@ server = function(input, output, session) {
       labs(title = paste("Tracks distribution by", input$parameter), y = " ", x = " ") +
       theme_minimal() +
       theme(
-        plot.title = element_text(size = 16, colour = "white", family = "Gotham", face = 2),
-        axis.text.x = element_text(colour = "white", size = 10, family = "Gotham"),         
+        plot.title = element_text(size = 16, colour = "white", face = 2),
+        axis.text.x = element_text(colour = "white", size = 10),         
         axis.text.y = element_blank(),         
-        text = element_text(size = 13, colour = "white", family = "Gotham"),        
+        text = element_text(size = 13, colour = "white"),        
         legend.title = element_blank(),
         panel.grid.minor = element_blank(), 
         panel.grid.major = element_line(color = "#b3b3b3", size = 0.1),
@@ -1028,7 +1032,7 @@ server = function(input, output, session) {
         showarrow = FALSE,
         xref = "paper",
         yref = "paper",
-        font = list(color = 'white', family = "Gotham", weight = "bold")
+        font = list(color = 'white')
       )
     
     combined_plot <- combined_plot %>%
@@ -1039,7 +1043,7 @@ server = function(input, output, session) {
         showarrow = FALSE,
         xref = "paper",
         yref = "paper",
-        font = list(color = 'white', family = "Gotham", size = 20, weight = "bold")
+        font = list(color = 'white', size = 20)
       )
     
     combined_plot <- combined_plot %>%
@@ -1048,7 +1052,7 @@ server = function(input, output, session) {
         showlegend = FALSE,
         plot_bgcolor = "transparent",
         paper_bgcolor = "transparent",
-        font = list(color = 'white', family = "Gotham", size = 18)
+        font = list(color = 'white', size = 18)
       ) %>%
       config(displayModeBar = FALSE)
     
@@ -1102,12 +1106,12 @@ server = function(input, output, session) {
     progress_width <- paste0(total_sum, "%")
     
     tags$div(
-      style = "text-align: center; font-family: 'Gotham';", 
-      tags$p("Your compatibility:", style = "font-size: 24px; font-weight: bold"),
+      style = "text-align: center;", 
+      tags$p("Your compatibility:", style = "font-size: 24px;"),
       tags$div(
         style = "display: flex; align-items: center; justify-content: center;",
         tags$div(
-          style = "background-color: #b3b3b3; height: 20px; width: 300px; position: relative; border-radius: 10px;",  
+          style = "background-color: #b3b3b3; height: 20px; width: 300px; position: relative; border-radius: 10px; margin-left: 3vw",  
           tags$div(
             id = "animated_bar",
             style = sprintf("background-color: #1db954; height: 100%%; width: %s; position: absolute; animation: progressAnimation 2s forwards; border-radius: 10px;", progress_width)  # Adjust size and border-radius as needed
@@ -1175,7 +1179,7 @@ server = function(input, output, session) {
         selected_songs$people[i],
         " people'>",
         "<div style='display: flex; align-items: center;'>",
-        "<span style='font-weight: bold; margin-bottom: 3vh;'>", i, ".</span>",
+        "<span style='margin-bottom: 3vh;'>", i, ".</span>",
         "<div style='margin-left: 2vh'></div>",
         "<img src='", selected_songs$image[i], "' style='width: 7.5vh; height: 7.5vh; margin-bottom: 3vh; margin-right: 1.5vh; border-radius: 5px;'>",
         "<div style='text-align: left; display: flex; flex-direction: column; justify-content: center; margin-bottom: 3vh;'>",
@@ -1188,7 +1192,7 @@ server = function(input, output, session) {
     }
     
     formatted_songs <- paste(
-      "<div style='font-family: Gotham, sans-serif; color: #FFFFFF; cursor: pointer; font-size: 18px;'>",
+      "<div style='color: #FFFFFF; cursor: pointer; font-size: 18px;'>",
       formatted_songs,
       "</div>",
       collapse = "\n"
@@ -1235,34 +1239,30 @@ server = function(input, output, session) {
   output$wrapped_title <- renderUI({
     div(
       h1(
-        paste0("Custom Wrapped for: ", input$user),
-        style = "font-weight: bold;"),
+        paste0("Custom Wrapped for: ", input$user)),
       h3(
         paste0("from ", input$Months[1], "-", input$year, " to ", input$Months[2], '-', input$year),
-        style = "font-weight: bold;",
         style = "margin-top:-5px;"))
   })
   
   
   output$compatibility_title <- renderUI({
-    div(h1("Compatibility"),
-        style = "font-weight: bold;")
+    div(h1("Compatibility"))
   })
   
   output$radio_button_label <- renderUI({
     div(h2("Choose person to compare:"),
-        style = "text-align: center; margin-bottom: 4vh; font-family: 'Gotham'; font-size: 8vh;")
+        style = "text-align: center; margin-bottom: 4vh; font-size: 8vh;")
   })
   
   
   output$playlist_title <- renderUI({
     div(h1("Playlist"),
-        style = "text-align: left; font-family: 'Gotham', font-weight: bold;")
+        style = "text-align: left;")
   })
   
   output$summary_title <- renderUI({
-    div(h1("Summary"),
-        style = "font-weight: bold;")
+    div(h1("Summary"))
   })
   
   
