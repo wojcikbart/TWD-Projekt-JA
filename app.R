@@ -513,7 +513,11 @@ ui <- dashboardPage(
                   div(
                     class = '12',
                     h3("Top Artists", style = "font-weight: bold; text-align: center;"),
-                    plotlyOutput("topArtists", height = '50vh', width = '50vw')),
+                    shinycssloaders::withSpinner(plotlyOutput("topArtists", height = '50vh', width = '50vw'),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                    ),
                   div(
                     class = '11',
                     uiOutput("stats"))),
@@ -521,20 +525,36 @@ ui <- dashboardPage(
                   class = 'row2',
                   div(
                     class = '21',
-                    h3(uiOutput("tracks", style = "font-weight: bold; text-align: center; margin-bottom: 4vh;"), style = "margin: 0;"),
-                    uiOutput("clickT"), style = "z-index: 400;"),
+                    h3(shinycssloaders::withSpinner(uiOutput("tracks", style = "font-weight: bold; text-align: center; margin-bottom: 4vh;"),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                       style = "margin: 0;"),
+                    shinycssloaders::withSpinner(uiOutput("clickT"),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                     style = "z-index: 400;"),
                   div(
                     class = '22',
                     h3("Artist's Songs Mean Features", style = "font-weight: bold; z-index: 300; text-align: center; margin: 0 0 0 -12vw; position: relative;"),
                     div(
                       class = 'radar',
-                      plotOutput("clickP", height = "60vh", width = '70vw')))),
+                      shinycssloaders::withSpinner(plotOutput("clickP", height = "60vh", width = '70vw'),
+                                                   type = getOption("spinner.type", default = 7),
+                                                   color = getOption("spinner.color", default = "#1DB954"),
+                                                   size = getOption("spinner.size", default = 1)),
+                    ))),
                 div(
                   class = 'row3',
                   div(
                     class = '31',
                     h3("Top tracks by number of streams", style = 'margin-top: 5px; font-weight: bold; text-align: center;'),
-                    plotlyOutput("topSongs", height = "40vh", width = '35vw')),
+                    shinycssloaders::withSpinner(plotlyOutput("topSongs", height = "40vh", width = '35vw'),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                    ),
                   div(
                     class = '32',
                     selectInput(
@@ -548,17 +568,29 @@ ui <- dashboardPage(
                         "Valence" = "valence",
                         "Instrumentalness" = "instrumentalness",
                         "Acousticness" = "acousticness")),
-                    plotlyOutput("violin", height = "40vh", width = '35vw'))),
+                    shinycssloaders::withSpinner(plotlyOutput("violin", height = "40vh", width = '35vw'),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                   )),
                 div(
                   class = 'row4',
                   div(
                     class = '41',
                     h3("Average minutes listened per day of the week", style = "font-weight: bold; text-align: center;"),
-                    plotlyOutput("minutesPerDayOfWeek", height = "40vh", width = '35vw')),
+                    shinycssloaders::withSpinner(plotlyOutput("minutesPerDayOfWeek", height = "40vh", width = '35vw'),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                    ),
                   div(
                     class = '42',
                     h3("Average listening through the day", style = "font-weight: bold; text-align: center;"),
-                    plotlyOutput("listeningThroughDay", height = "40vh", width = '40vw'))))))),
+                    shinycssloaders::withSpinner(plotlyOutput("listeningThroughDay", height = "40vh", width = '40vw'),
+                                                 type = getOption("spinner.type", default = 7),
+                                                 color = getOption("spinner.color", default = "#1DB954"),
+                                                 size = getOption("spinner.size", default = 1)),
+                    )))))),
         tabItem(
           tabName = "compatibility",
           fluidPage(
@@ -578,10 +610,18 @@ ui <- dashboardPage(
                   status = "default")),
               div(
                 class = 'compatibility_plot',
-                plotlyOutput("compatibility_analysis")),
+                shinycssloaders::withSpinner(plotlyOutput("compatibility_analysis"),
+                                             type = getOption("spinner.type", default = 7),
+                                             color = getOption("spinner.color", default = "#1DB954"),
+                                             size = getOption("spinner.size", default = 1)),
+                ),
               div(
                 class = 'meter',
-              uiOutput("compatibility_meter")))),
+                shinycssloaders::withSpinner(uiOutput("compatibility_meter"),
+                                             type = getOption("spinner.type", default = 7),
+                                             color = getOption("spinner.color", default = "#1DB954"),
+                                             size = getOption("spinner.size", default = 1)),
+              ))),
         ),
         tabItem(
           tabName = "playlist",
@@ -609,7 +649,11 @@ ui <- dashboardPage(
                                 max = 50,
                                 value = 15,
                                 ticks = FALSE))),
-                uiOutput("song_list_output"))))))),
+                shinycssloaders::withSpinner(uiOutput("song_list_output"),
+                                             type = getOption("spinner.type", default = 7),
+                                             color = getOption("spinner.color", default = "#1DB954"),
+                                             size = getOption("spinner.size", default = 1)),
+               )))))),
     div(
       div(
         class = "footer-left-panel",
@@ -1047,7 +1091,7 @@ server = function(input, output, session) {
         paper_bgcolor = "transparent",
         font = list(color = 'white', size = 18)
       ) %>%
-      config(displayModeBar = FALSE)
+      config(displayModeBar = FALSE, staticPlot = TRUE)
     
     combined_plot
   })
