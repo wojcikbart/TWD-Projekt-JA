@@ -125,11 +125,6 @@ HTML_styles <- '
         flex-direction: column;
         justify-content: top;
       }
-
-      html {
-        font-size: 16px;
-        color: #FFFFFF !important;
-      }
       
       * {
           letter-spacing: -0.35px;
@@ -335,7 +330,7 @@ HTML_styles <- '
         justify-content: center;
       }
 
-      .checkbox {
+      .check {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -462,6 +457,13 @@ HTML_styles <- '
       .playlist-panel2 {
         margin-left: 3vw;
       }
+
+      .row5 {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 8vh;
+      }
       '
 
 
@@ -494,11 +496,10 @@ ui <- dashboardPage(
           class = "sidebar-panel-lower",
           sidebarMenu(
             id = "tabs",
-            h3("Features", style = "margin-left: 5%; font-size: 35px; font-weight: bold;"),
+            h3("Features", style = "margin-left: 5%; font-size: 5vh; font-weight: bold;"),
             menuItem("  Wrapped", tabName = "wrapped"),
             menuItem("  Compatibility", tabName = "compatibility"),
-            menuItem("  Playlist", tabName = "playlist"),
-            menuItem("  Summary", tabName = "summary")))))),
+            menuItem("  Playlist", tabName = "playlist")))))),
   dashboardBody(
     tags$head(tags$style(HTML_styles)),
     div(
@@ -514,13 +515,13 @@ ui <- dashboardPage(
                 class = 'wrapped',
                 div(
                   class = 'row1',
-                  # div(
-                  #   class = '11',
-                  #   h3('Some stats', style = 'width:15vw; font-weight: bold;')),
+                  div(
+                    class = '11',
+                    uiOutput("stats")),
                   div(
                     class = '12',
                     h3("Top Artists", style = "font-weight: bold; text-align: center;"),
-                    plotlyOutput("topArtists", height = '50vh', width = '70vw'))),
+                    plotlyOutput("topArtists", height = '50vh', width = '50vw'))),
                 div(
                   class = 'row2',
                   div(
@@ -598,7 +599,7 @@ ui <- dashboardPage(
                 h3("Choose people and number of songs for your custom playlist:",
                  style = "text-align: left; font-weight: bold; margin-bottom: 5vh;"),
                 div(
-                  class = 'checkbox',
+                  class = 'check',
                   checkboxGroupInput("selected_people",
                                        label = NULL,
                                        choices = c('Karolina', 'Bartek', 'Filip', 'Danonek1', 'Danonek2'),
@@ -613,12 +614,7 @@ ui <- dashboardPage(
                                 max = 50,
                                 value = 15,
                                 ticks = FALSE))),
-                uiOutput("song_list_output"))))),
-        tabItem(
-          tabName = "summary",
-          fluidPage(
-            # Tutaj kod do podsumowania
-            uiOutput("summary_title"))))),
+                uiOutput("song_list_output"))))))),
     div(
       div(
         class = "footer-left-panel",
@@ -673,8 +669,10 @@ server = function(input, output, session) {
   #########################   WRAPPED   ######################################
   #### MINUTES PER WEEK ####
   mPWfiltered <- reactive({
+    Sys.setlocale("LC_TIME", "en_US.UTF-8")
+    
     numOfDays <- data.frame(date = seq(as.Date("2022-01-01"), as.Date("2023-12-31"), by = "days")) %>% 
-      mutate(dayOfWeek = weekdays(date), month = month(date), year = year(date)) %>% 
+      mutate(dayOfWeek = format(date, "%A"), month = month(date), year = year(date)) %>% 
       group_by(year, month, dayOfWeek) %>% 
       summarise(count = n()) %>% 
       filter(year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2])
@@ -1245,6 +1243,56 @@ server = function(input, output, session) {
         style = "margin-top:-5px;"))
   })
   
+  output$stats <- renderUI({
+    SH %>%
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      summarise(minutes = sum(ms_played) / 60000) -> minutes
+    
+    minutes = round(minutes[1,1], digits = 0)
+    
+    SH %>%
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      summarise(artists = unique(master_metadata_album_artist_name)) %>% 
+      na.omit(artists) -> artists
+    
+    artists = nrow(artists)
+    
+    SH %>%
+      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      summarise(songs = unique(master_metadata_track_name)) %>%  
+      na.omit(songs) -> songs
+    
+    songs = nrow(songs)
+    
+    div(
+      div(
+        h2("You spent", style = " font-weight: bold; margin-right: 1vw; font-size: 4vh;  color: #f8d5dd;"),
+        h1(paste(format(minutes, big.mark = ",", scientific = F)), style = "font-weight: bold; font-size: 5vh; margin-top: 1.5vh;"),
+        style = "display: flex; flex-direction: row; justify-content: center;"), 
+      h2("minutes listening", style = " font-weight: bold; margin-bottom: 2vh; margin-top: 0; text-align: center; font-size: 4vh; color: #f8d5dd;"),
+      div(
+        h2('You listened to ', style = " font-weight: bold; margin-right: 1vw; font-size: 4vh; color: #f8d5dd;"),
+        h1(paste(format(artists, big.mark = ",", scientific = F)), style = "font-weight: bold; font-size: 5vh; margin-top: 1.5vh;"),
+        style = "display: flex; flex-direction: row; justify-content: center;"), 
+      h2("different artists", style = " font-weight: bold; margin-bottom: 2vh; margin-top: 0; text-align: center; font-size: 4vh; color: #f8d5dd;"),
+      div(
+        h2('You listened to ', style = " font-weight: bold; margin-right: 1vw; font-size: 4vh; color: #f8d5dd;"),
+        h1(paste(format(songs, big.mark = ",", scientific = F)), style = "font-weight: bold; font-size: 5vh; margin-top: 1.5vh;"),
+        style = "display: flex; flex-direction: row; justify-content: center;"), 
+      h2("different songs", style = " font-weight: bold; margin-bottom: 2vh; margin-top: 0; text-align: center; font-size: 4vh; color: #f8d5dd;"),
+      style = 'justify-content: center; margin-top: 8vh'
+    )  
+  })
+  
+  output$tracks <- renderText({
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_data <- event_data("plotly_click")
+    if (!is.null(selected_data)) {
+      selected_artist <- selected_data$y
+    }
+    return(paste0("Top tracks by ", selected_artist))
+  })
+  
   
   output$compatibility_title <- renderUI({
     div(h1("Compatibility"))
@@ -1259,10 +1307,6 @@ server = function(input, output, session) {
   output$playlist_title <- renderUI({
     div(h1("Playlist"),
         style = "text-align: left;")
-  })
-  
-  output$summary_title <- renderUI({
-    div(h1("Summary"))
   })
   
   
