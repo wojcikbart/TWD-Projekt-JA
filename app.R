@@ -371,14 +371,12 @@ HTML_styles <- '
 
       .11 {
         display: flex;
-        flex-direction: column:
-        width: 75%;
+        flex-direction: column;
       }
 
       .12{
         display: flex;
         flex-direction: column:
-        width: 25%;
       }
 
       .row1, .row2, .row3, .row4 {
@@ -458,11 +456,8 @@ HTML_styles <- '
         margin-left: 3vw;
       }
 
-      .row5 {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        margin-bottom: 8vh;
+      .row1 {
+        justify-content: space-evenly;
       }
       '
 
@@ -473,7 +468,7 @@ ui <- dashboardPage(
   title = "Jestem Akustyczny",
   skin = "green",
   dashboardHeader(
-    title = img(src = "https://raw.githubusercontent.com/FylypO/DVT---Project/59d779c8d9e780649209a29821fac10dcf4f2db2/logo.png", style = 'height: 40px;'),
+    title = img(src = "https://github.com/FylypO/DVT---Project/blob/main/logo.png?raw=true", style = 'height: 40px;'),
     titleWidth = '20vw'),
   dashboardSidebar(
     width = '20vw',
@@ -516,12 +511,12 @@ ui <- dashboardPage(
                 div(
                   class = 'row1',
                   div(
-                    class = '11',
-                    uiOutput("stats")),
-                  div(
                     class = '12',
                     h3("Top Artists", style = "font-weight: bold; text-align: center;"),
-                    plotlyOutput("topArtists", height = '50vh', width = '50vw'))),
+                    plotlyOutput("topArtists", height = '50vh', width = '50vw')),
+                  div(
+                    class = '11',
+                    uiOutput("stats"))),
                 div(
                   class = 'row2',
                   div(
@@ -1280,7 +1275,7 @@ server = function(input, output, session) {
         h1(paste(format(songs, big.mark = ",", scientific = F)), style = "font-weight: bold; font-size: 5vh; margin-top: 1.5vh;"),
         style = "display: flex; flex-direction: row; justify-content: center;"), 
       h2("different songs", style = " font-weight: bold; margin-bottom: 2vh; margin-top: 0; text-align: center; font-size: 4vh; color: #f8d5dd;"),
-      style = 'justify-content: center; margin-top: 8vh'
+      style = 'justify-content: center; margin-top: 8vh;'
     )  
   })
   
