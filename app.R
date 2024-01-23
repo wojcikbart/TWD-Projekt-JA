@@ -18,19 +18,9 @@ library(showtext)
 # font_import()
 # loadfonts()
 # showtext_auto()
-# font_add("Gotham", "data/font/Gotham-Bold.otf")
+font_add("Gotham", "data/Gotham-Bold.otf")
 
 ####   Wczytanie Danych   ####
-
-# Songs <- fromJSON("./dane/Songs.json")
-# 
-# SH <- fromJSON("./dane/SpotifyExtendedAll.json")
-# 
-# minutesPerWeek <- fromJSON("./dane/minutesPerWeek.json")
-# 
-# playlist <- fromJSON("./dane/playlistData.json")
-#
-# compatibility_data <- fromJSON("./dane/compatibility_data.json")
 
 Songs <- fromJSON("data/Songs.json")
 
@@ -610,7 +600,8 @@ ui <- dashboardPage(
                   status = "default")),
               div(
                 class = 'compatibility_plot',
-                shinycssloaders::withSpinner(plotlyOutput("compatibility_analysis"),
+                shinycssloaders::withSpinner(plotlyOutput("compatibility_analysis",
+                                                          width = "70vw"),
                                              type = getOption("spinner.type", default = 7),
                                              color = getOption("spinner.color", default = "#1DB954"),
                                              size = getOption("spinner.size", default = 1)),
@@ -816,6 +807,7 @@ server = function(input, output, session) {
   })
   
   #### TOP ARTISTS #### 
+  
   SHfilteredArtists <- reactive({
     SH %>% 
       filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
@@ -835,7 +827,8 @@ server = function(input, output, session) {
             y = ~reorder(master_metadata_album_artist_name, time),
             type = "bar",
             marker = list(color = '#1DB954'),
-            orientation = 'h') %>%
+            orientation = 'h',
+            source = "topArtists") %>%
       layout(
         xaxis = list(title = "Minutes Listened", ticks = x_ticks, gridcolor = "#606060"),
         yaxis = list(title = list(text = "Artist", standoff = 10)),
@@ -870,7 +863,10 @@ server = function(input, output, session) {
       na.omit()
   })
   
-  observeEvent(c(input$person, input$backward, input$forward), {
+  top_artist <- reactiveVal(NULL)
+  
+  observeEvent(c(input$user, input$backward, input$forward), {
+    top_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
     plotlyProxy("clickT") %>% 
       plotlyProxyInvoke("restyle", list(y = NULL))
     plotlyProxy("clickP") %>% 
@@ -880,10 +876,11 @@ server = function(input, output, session) {
   output$clickT <- renderTable({
     width = '35vw'
     selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
-    selected_data <- event_data("plotly_click")
+    selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
+    
     selected_songs <- SHfilteredArtistsSongs() %>%
       filter(master_metadata_album_artist_name == selected_artist) %>%
       head(5) %>%
@@ -895,7 +892,7 @@ server = function(input, output, session) {
   
   output$tracks <- renderText({
     selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
-    selected_data <- event_data("plotly_click")
+    selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
@@ -904,7 +901,7 @@ server = function(input, output, session) {
   
   output$clickP <- renderPlot({
     selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
-    selected_data <- event_data("plotly_click")
+    selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
@@ -1325,7 +1322,7 @@ server = function(input, output, session) {
   
   output$tracks <- renderText({
     selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
-    selected_data <- event_data("plotly_click")
+    selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
       selected_artist <- selected_data$y
     }
