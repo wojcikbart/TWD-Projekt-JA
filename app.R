@@ -475,7 +475,7 @@ ui <- dashboardPage(
             fill = TRUE,
             shape = "round",
             choices = c(2022,2023),
-            selected = 2022,
+            selected = 2023,
             status = "default")),
         div(
           class = "sidebar-panel-lower",
@@ -493,7 +493,14 @@ ui <- dashboardPage(
         tabItem(
           tabName = "wrapped",
           fluidPage(
-            # Tutaj kod dla wrapped
+            # funckja do czyszczenia plotlyClick
+            # useShinyjs(),
+            # extendShinyjs(
+            #   functions = list(
+            #     clearPlotlyClick = "function() { Shiny.onInputChange('.clientValue-plotly_click-topArtists', 'null'); }"
+            #   ),
+            #   text = NULL
+            # ),
             uiOutput("wrapped_title"),
             fluidRow(
               div(
@@ -856,29 +863,46 @@ server = function(input, output, session) {
   ArtistFeaturesfiltered <- reactive({
     Songs %>% 
       filter(person == input$user) %>% 
+      filter(!rowSums(is.na(select(., danceability:valence))) > 0) %>% 
       group_by(master_metadata_album_artist_name) %>% 
       select(master_metadata_album_artist_name, danceability:valence) %>% 
       summarise(across(danceability:valence, mean)) %>% 
-      select(-c(mode, key, loudness)) %>% 
-      na.omit()
+      select(-c(mode, key, loudness)) 
   })
   
   top_artist <- reactiveVal(NULL)
   
   observeEvent(c(input$user, input$backward, input$forward), {
-    top_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    top_artist(SHfilteredArtists()$master_metadata_album_artist_name[1])
     plotlyProxy("clickT") %>% 
       plotlyProxyInvoke("restyle", list(y = NULL))
     plotlyProxy("clickP") %>% 
       plotlyProxyInvoke("restyle", list(y = NULL))
+    # shinyjs::runjs("shinyjs.clearPlotlyClick();")
+    
+    output$tracks <- renderText({
+      selected_artist <- top_artist()
+      selected_data <- event_data("plotly_click", source = "topArtists")
+      if (!is.null(selected_data)) {
+        isPresent <- selected_data$y %in% SHfilteredArtists()$master_metadata_album_artist_name
+        if (isPresent){
+          selected_artist <- selected_data$y
+        }
+      }
+      return(paste0("Top tracks by ", selected_artist))
+    })
+    
   })
   
   output$clickT <- renderTable({
     width = '35vw'
-    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_artist <- top_artist()
     selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
-      selected_artist <- selected_data$y
+      isPresent <- selected_data$y %in% SHfilteredArtists()$master_metadata_album_artist_name
+      if (isPresent){
+        selected_artist <- selected_data$y
+      }
     }
     
     selected_songs <- SHfilteredArtistsSongs() %>%
@@ -891,24 +915,31 @@ server = function(input, output, session) {
   }, width = '35vw')
   
   output$tracks <- renderText({
-    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_artist <- top_artist()
     selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
-      selected_artist <- selected_data$y
+      isPresent <- selected_data$y %in% SHfilteredArtists()$master_metadata_album_artist_name
+      if (isPresent){
+        selected_artist <- selected_data$y
+      }
     }
     return(paste0("Top tracks by ", selected_artist))
   })
   
   output$clickP <- renderPlot({
-    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
+    selected_artist <- top_artist()
     selected_data <- event_data("plotly_click", source = "topArtists")
     if (!is.null(selected_data)) {
-      selected_artist <- selected_data$y
+      isPresent <- selected_data$y %in% SHfilteredArtists()$master_metadata_album_artist_name
+      if (isPresent){
+        selected_artist <- selected_data$y
+      }
     }
     selected <- ArtistFeaturesfiltered() %>% 
       filter(master_metadata_album_artist_name == selected_artist) %>% 
+      filter(master_metadata_album_artist_name == selected_artist) %>%
       select(danceability:valence)
-    selected <- rbind(0, 1, selected) 
+    selected <- rbind(0, 1, selected)
    par (bg = "#121212", col = "white", font = 2)
     rc <- radarchart(selected, 
                      axistype = 1, 
@@ -922,6 +953,7 @@ server = function(input, output, session) {
                      col = "#b3b3b3",
                      caxislabels = c(0, 0.25, 0.5, 0.75, 1),
                      title = " ")
+   
     return(rc)
   })
   
@@ -1253,6 +1285,7 @@ server = function(input, output, session) {
       "user",
       selected = new
     )
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
   })
   
   observeEvent(input$forward,{
@@ -1265,6 +1298,7 @@ server = function(input, output, session) {
       "user",
       selected = new
     )
+    selected_artist <- SHfilteredArtists()$master_metadata_album_artist_name[1]
   })
   
   
