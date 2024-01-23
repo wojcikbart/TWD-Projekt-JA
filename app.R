@@ -703,6 +703,15 @@ server = function(input, output, session) {
   
   ####   Praca na Danych   ####
   
+  selected_year <- 2022
+  
+  selected_year <- eventReactive(c(input$user, input$year), {
+    if (input$user == "Bartek" && input$year == 2022) {
+      return(2023)
+    } else {
+      return(input$year)
+    }
+  })
   #########################   WRAPPED   ######################################
   #### MINUTES PER WEEK ####
   mPWfiltered <- reactive({
@@ -712,10 +721,10 @@ server = function(input, output, session) {
       mutate(dayOfWeek = format(date, "%A"), month = month(date), year = year(date)) %>% 
       group_by(year, month, dayOfWeek) %>% 
       summarise(count = n()) %>% 
-      filter(year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2])
+      filter(year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2])
     
     minutesPerWeek <- SH %>%
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       mutate(date = as.Date(ts)) %>% 
       mutate(month = month(date),
              week = week(date),
@@ -766,13 +775,13 @@ server = function(input, output, session) {
       mutate(day_of_week = weekdays(date), month = month(date), year = year(date)) %>% 
       group_by(year, month, day_of_week) %>% 
       summarise(count = n()) %>% 
-      filter(year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      filter(year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
       group_by(year) %>% 
       summarise(n = sum(count)) %>% 
       select(n)
     
     lTD <- SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       mutate(ts = ymd_hms(ts),
              hour = hour(ts)) %>% 
       group_by(hour) %>%
@@ -817,7 +826,7 @@ server = function(input, output, session) {
   
   SHfilteredArtists <- reactive({
     SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       group_by(master_metadata_album_artist_name) %>% 
       summarise(time = sum(ms_played) / 60000) %>% 
       arrange(-time) %>% 
@@ -850,7 +859,7 @@ server = function(input, output, session) {
   
   SHfilteredArtistsSongs <- reactive({
     SH %>%
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
       group_by(master_metadata_album_artist_name, master_metadata_track_name) %>%
       summarise(time = sum(ms_played)) %>%
       na.omit() %>%
@@ -962,7 +971,7 @@ server = function(input, output, session) {
   
   SHfilteredSongs <- reactive({
     SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2], ms_played > 30000) %>% 
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2], ms_played > 30000) %>% 
       group_by(master_metadata_track_name) %>% 
       summarise(times_played = n()) %>% 
       arrange(-times_played) %>% 
@@ -995,7 +1004,7 @@ server = function(input, output, session) {
   #### VIOLIN FEATURES ####
   output$violin <- renderPlotly({
     songs <- SH %>% 
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>% 
       select(master_metadata_track_name)
     
     SongsFeaturesfiltered <- Songs %>% 
@@ -1315,20 +1324,20 @@ server = function(input, output, session) {
   
   output$stats <- renderUI({
     SH %>%
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
       summarise(minutes = sum(ms_played) / 60000) -> minutes
     
     minutes = round(minutes[1,1], digits = 0)
     
     SH %>%
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
       summarise(artists = unique(master_metadata_album_artist_name)) %>% 
       na.omit(artists) -> artists
     
     artists = nrow(artists)
     
     SH %>%
-      filter(person == input$user, year == input$year, as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
+      filter(person == input$user, year == selected_year(), as.numeric(month) >= input$Months[1] & as.numeric(month) <= input$Months[2]) %>%
       summarise(songs = unique(master_metadata_track_name)) %>%  
       na.omit(songs) -> songs
     
