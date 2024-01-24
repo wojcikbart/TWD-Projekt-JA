@@ -30,11 +30,6 @@ playlist <- fromJSON("data/playlistData.json")
 
 compatibility_data <- fromJSON("data/compatibility_data.json")
 
-test <- Songs %>% 
-  select(id, master_metadata_album_artist_name, master_metadata_track_name, Album, danceability,
-         energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness,
-         valence, tempo, duration_ms.x, name, popularity, album.name, image, person)
-write_json(test, "Songs.json")
 
 ####   Style   ####
 
