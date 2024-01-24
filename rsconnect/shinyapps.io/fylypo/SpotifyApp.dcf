@@ -1,0 +1,13 @@
+name: SpotifyApp
+title: SpotifyApp
+username: fylypo
+account: fylypo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11019957
+bundleId: 8180048
+url: https://fylypo.shinyapps.io/SpotifyApp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Songs.json
