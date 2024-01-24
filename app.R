@@ -30,6 +30,12 @@ playlist <- fromJSON("data/playlistData.json")
 
 compatibility_data <- fromJSON("data/compatibility_data.json")
 
+test <- Songs %>% 
+  select(id, master_metadata_album_artist_name, master_metadata_track_name, Album, danceability,
+         energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness,
+         valence, tempo, duration_ms.x, name, popularity, album.name, image, person)
+write_json(test, "Songs.json")
+
 ####   Style   ####
 
 HTML_styles <- '
@@ -947,7 +953,7 @@ server = function(input, output, session) {
     selected <- ArtistFeaturesfiltered() %>% 
       filter(master_metadata_album_artist_name == selected_artist) %>% 
       filter(master_metadata_album_artist_name == selected_artist) %>%
-      select(danceability:valence)
+      select(danceability, valence, liveness, instrumentalness, acousticness, speechiness, energy)
     selected <- rbind(0, 1, selected)
    par (bg = "#121212", col = "white", font = 2)
     rc <- radarchart(selected, 
@@ -1010,8 +1016,7 @@ server = function(input, output, session) {
     SongsFeaturesfiltered <- Songs %>% 
       filter(person == input$user) %>% 
       right_join(songs, by = "master_metadata_track_name") %>% 
-      select(danceability:valence, person) %>%
-      select(-c(mode, key, loudness)) %>%
+      select(danceability, energy, liveness, speechiness, valence, instrumentalness, acousticness, person) %>%
       na.omit()
 
     gv <- ggplot(SongsFeaturesfiltered, aes(x = person, y = !!sym(input$parameter))) +
